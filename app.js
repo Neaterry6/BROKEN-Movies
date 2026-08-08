@@ -14,7 +14,7 @@ const playSvg = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
 
 function posterCard(m, opts = {}) {
   const img = m.cover || m.image || "";
-  const isSeries = (m.typeId === 2 || m.type === "tv" || m.type === "series");
+  const isSeries = (m.typeId === 2 || m.typeId === 3 || m.type === "tv" || m.type === "series" || m.type === "anime");
   const type = isSeries ? "SERIES" : "MOVIE";
   const data = JSON.stringify(m).replace(/"/g, "&quot;");
   const playOverlay = opts.continueWatching ? `<div class="cplay">${playSvg}</div>` : "";
@@ -138,7 +138,7 @@ async function go(view) {
         { title: "Romance", more: "movies", items: s.romance || [] },
       ], (s.popular || []).slice(0, 5));
     } else if (view === "anime") {
-      const d = await fetchJSON(`${API}/anime/top`);
+      const d = await fetchJSON(`${API}/anime/top?limit=100`);
       renderGrid(d.anime || [], "Anime");
     } else if (view === "genres") {
       $("content").innerHTML = '<div class="empty">Pick a genre to browse 🎭</div>';
@@ -175,7 +175,7 @@ async function openDetail(dataStr) {
     try { const d = await fetchJSON(`${API}/detail?path=${encodeURIComponent(m.detailPath)}`); if (d.subject) Object.assign(m, d.subject); } catch {}
   }
   const img = m.cover || m.image || "";
-  const isSeries = (m.typeId === 2 || m.type === "tv" || m.type === "series");
+  const isSeries = (m.typeId === 2 || m.typeId === 3 || m.type === "tv" || m.type === "series" || m.type === "anime");
   $("modalBox").innerHTML = `
     ${img ? `<img src="${img}" style="width:100%;max-height:300px;object-fit:cover;border-radius:12px;margin-bottom:14px">` : ""}
     <h2>${m.title || ""}</h2>
