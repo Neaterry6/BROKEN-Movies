@@ -123,11 +123,11 @@ async function go(view) {
         { title: "BL Series", sub: "Boys love stories", more: "bl", items: s.blSeries || [] },
         { title: "Comedy", sub: "Laugh out loud", more: "genres", items: s.comedy || [] },
       ], all);
-    } else if (view === "movies") { const d = await fetchJSON(`${API}/movie/home/trending?limit=40`); renderGrid(d.movies || [], "Movies"); }
-    else if (view === "series") { const d = await fetchJSON(`${API}/series`); renderGrid(d.series || d.tv || [], "TV Series"); }
-    else if (view === "nollywood") { const d = await fetchJSON(`${API}/nollywood?limit=40`); renderGrid(d.movies || [], "Nollywood"); }
-    else if (view === "bl") { const d = await fetchJSON(`${API}/bl?limit=40`); renderGrid(d.series || [], "BL Series"); }
-    else if (view === "kdrama") { const d = await fetchJSON(`${API}/kdrama?limit=40`); renderGrid(d.series || [], "K-Dramas"); }
+    } else if (view === "movies") { const d = await fetchJSON(`${API}/movie/home/trending?limit=100`); renderGrid(d.movies || [], "Movies"); }
+    else if (view === "series") { const d = await fetchJSON(`${API}/series?limit=100`); renderGrid(d.series || d.tv || [], "TV Series"); }
+    else if (view === "nollywood") { const d = await fetchJSON(`${API}/nollywood?limit=100`); renderGrid(d.movies || [], "Nollywood"); }
+    else if (view === "bl") { const d = await fetchJSON(`${API}/bl?limit=100`); renderGrid(d.series || [], "BL Series"); }
+    else if (view === "kdrama") { const d = await fetchJSON(`${API}/kdrama?limit=100`); renderGrid(d.series || [], "K-Dramas"); }
     else if (view === "hollywood") {
       const d = await fetchJSON(`${API}/hollywood/home`);
       const s = d.hollywoodHomepage || {};
