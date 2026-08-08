@@ -2,50 +2,93 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BROKEN Movies — Stream Movies & Series</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BROKEN Movies</title>
 <link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<header>
-  <div class="logo">🎬 BROKEN <span>Movies</span></div>
-  <div class="searchbar">
-    <input id="q" placeholder="Search movies & series..." onkeydown="if(event.key==='Enter')search()">
-    <button onclick="search()">Search</button>
+
+<!-- App Bar -->
+<header class="appbar">
+  <div class="brand">
+    <div class="logo">▶</div>
+    <b>BROKEN <span>Movies</span></b>
   </div>
-  <nav id="nav">
-    <button class="navbtn active" data-view="home" onclick="go('home')">Home</button>
-    <button class="navbtn" data-view="movies" onclick="go('movies')">Movies</button>
-    <button class="navbtn" data-view="series" onclick="go('series')">Series</button>
-    <button class="navbtn" data-view="nollywood" onclick="go('nollywood')">Nollywood</button>
-    <button class="navbtn" data-view="bl" onclick="go('bl')">BL</button>
-    <button class="navbtn" data-view="kdrama" onclick="go('kdrama')">K-Drama</button>
-    <button class="navbtn" data-view="hollywood" onclick="go('hollywood')">Hollywood</button>
-    <button class="navbtn" data-view="genres" onclick="go('genres')">Genres</button>
-  </nav>
+  <div class="actions">
+    <button class="icon-btn" onclick="toggleSearch()" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    </button>
+    <button class="icon-btn" onclick="toast('BROKEN Movies · powered by BROKEN API')" aria-label="Info">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    </button>
+  </div>
 </header>
 
-<div class="container">
-  <div id="genrebar" class="genre-chips" style="display:none">
-    <span class="chip" onclick="genre('action')">Action</span>
-    <span class="chip" onclick="genre('comedy')">Comedy</span>
-    <span class="chip" onclick="genre('horror')">Horror</span>
-    <span class="chip" onclick="genre('romance')">Romance</span>
-    <span class="chip" onclick="genre('scifi')">Sci-Fi</span>
-    <span class="chip" onclick="genre('drama')">Drama</span>
-    <span class="chip" onclick="genre('animation')">Animation</span>
-    <span class="chip" onclick="genre('documentary')">Documentary</span>
-  </div>
-  <div id="content"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+<!-- Search -->
+<div class="searchbar" id="searchbar">
+  <input id="q" placeholder="Search movies & series..." onkeydown="if(event.key==='Enter')search()">
+  <button onclick="search()">Go</button>
 </div>
 
-<!-- Detail / Player modal -->
+<!-- Genre chips -->
+<div class="chips" id="chips" style="display:none">
+  <button class="chip" onclick="genre('action')">Action</button>
+  <button class="chip" onclick="genre('comedy')">Comedy</button>
+  <button class="chip" onclick="genre('horror')">Horror</button>
+  <button class="chip" onclick="genre('romance')">Romance</button>
+  <button class="chip" onclick="genre('scifi')">Sci-Fi</button>
+  <button class="chip" onclick="genre('drama')">Drama</button>
+  <button class="chip" onclick="genre('animation')">Animation</button>
+  <button class="chip" onclick="genre('documentary')">Documentary</button>
+</div>
+
+<main class="container" id="content">
+  <div class="loading"><div class="spinner"></div>Loading...</div>
+</main>
+
+<footer>BROKEN Movies · creator: brokenvzn</footer>
+
+<!-- Modal -->
 <div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal-box" id="modalBox"></div>
 </div>
 
 <div class="toast" id="toast"></div>
-<footer>BROKEN Movies · powered by BROKEN API · creator: brokenvzn</footer>
+
+<!-- FAB -->
+<button class="fab" onclick="openInfo()" aria-label="Info">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 15v-6h2v6h-2zm0-8V7h2v2h-2z"/></svg>
+</button>
+
+<!-- Bottom Nav -->
+<nav class="bottomnav" id="bottomnav">
+  <button class="nav-item active" data-view="home" onclick="go('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>Home
+  </button>
+  <button class="nav-item" data-view="movies" onclick="go('movies')">
+    <svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M8 4l4 5-4 5M16 4l-3 5 3 5"/></svg>Movies
+  </button>
+  <button class="nav-item" data-view="series" onclick="go('series')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 2l-5 5-5-5"/></svg>TV
+  </button>
+  <button class="nav-item" data-view="nollywood" onclick="go('nollywood')">
+    <svg viewBox="0 0 24 24"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>Nolly
+  </button>
+  <button class="nav-item" data-view="genres" onclick="go('genres')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.5 9.5l5-3M9.5 9.5l2 5 3-5"/></svg>Genres
+  </button>
+  <button class="nav-item" data-view="bl" onclick="go('bl')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v5m0 0l-3 6m3-6l3 6"/></svg>BL
+  </button>
+  <button class="nav-item" data-view="kdrama" onclick="go('kdrama')">
+    <svg viewBox="0 0 24 24"><path d="M12 3l2 4 5 .5-3.5 3 1 5L12 13l-4.5 2.5 1-5L5 7.5 10 7z"/></svg>K-Drama
+  </button>
+  <button class="nav-item" data-view="hollywood" onclick="go('hollywood')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>Hollywood
+  </button>
+</nav>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <script src="app.js"></script>
