@@ -325,8 +325,8 @@ async function loadDownload(detailPath, id, isSeries, se, ep) {
     const d = await fetchJSON(url);
     const dl = d.downloads || [];
     if (dl.length) {
-      // Use the API proxy so the browser downloads through the API (avoids CDN 429 rate limits)
-      links.innerHTML = dl.map((x) => `<a class="btn btn-dl" href="${API}/download/proxy?path=${encodeURIComponent(detailPath)}&id=${id}${isSeries === "true" ? `&se=${se||1}&ep=${ep||1}` : ""}&res=${x.resolution || ""}">⬇ ${x.resolution ? x.resolution + "p" : "MP4"} ${x.format || ""} ${x.size ? '(' + Math.round(x.size/1048576) + 'MB)' : ''}</a>`).join("");
+      links.innerHTML = dl.map((x) => `<a class="btn btn-dl" target="_blank" rel="noopener" href="${x.url}">⬇ ${x.resolution ? x.resolution + "p" : "MP4"} ${x.format || ""} ${x.size ? '(' + Math.round(x.size/1048576) + 'MB)' : ''}</a>`).join("");
+      links.innerHTML += `<div style="margin-top:8px;color:var(--muted);font-size:11px">Tip: if the CDN says 429/Too Many Requests, wait a minute and retry — the file host rate-limits.</div>`;
       if ((d.captions||[]).length) links.innerHTML += `<div style="margin-top:8px;color:var(--muted);font-size:11px">${(d.captions||[]).length} subtitle languages available</div>`;
     } else if (d.streamUrl || d.m3u8) {
       links.innerHTML = `<a class="btn btn-play" target="_blank" href="${d.streamUrl || d.m3u8}">▶ Open stream link</a>`;
