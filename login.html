@@ -46,7 +46,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
     <button class="btn" onclick="login()">Sign In</button>
     <div class="row"><label style="display:flex;gap:6px;align-items:center;color:var(--muted)"><input type="checkbox"> Remember me</label><a href="#">Forgot?</a></div>
     <div class="alt">New here? <a href="#" onclick="showSignup()">Create account</a></div>
-    <div class="demo">Demo access: <b>demo@broken.com</b> / <b>broken123</b></div>
   </div>
   <div class="box" id="signupBox" style="display:none">
     <h1>Create account</h1>
@@ -65,7 +64,7 @@ function login(){
   const p=document.getElementById('pass').value;
   if(em==='demo@broken.com'&&p==='broken123'){
     localStorage.setItem('bm_user','demo'); window.location.href='index.html';
-  } else setErr('Invalid email or password. Try demo@broken.com / broken123');
+  } else setErr('Invalid email or password.');
 }
 function signup(){
   const n=document.getElementById('sname').value.trim();
