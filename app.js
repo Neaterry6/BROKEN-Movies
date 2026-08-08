@@ -2,6 +2,8 @@
 const API = "https://broken-api-production-31d5.up.railway.app/api";
 const $ = (id) => document.getElementById(id);
 let currentView = "home";
+// Genre views reachable via See All / nav — map view name to API genre slug
+const GENRE_VIEWS = { action: "action", comedy: "comedy", horror: "horror", romance: "romance", scifi: "scifi", drama: "drama", animation: "animation", documentary: "documentary" };
 
 // LOGIN GATE
 if (!localStorage.getItem("bm_user")) {
@@ -151,10 +153,10 @@ async function go(view) {
       rows.push(
         { title: "Trending Now", sub: "Hot right now", more: "movies", opts: { live: true }, items: s.trendingNow || [] },
         { title: "Nollywood", sub: "Top Nigerian movies", more: "nollywood", items: s.nollywood || [] },
-        { title: "Action Movies", sub: "Adrenaline-packed", more: "genres", items: s.actionMovies || [] },
+        { title: "Action Movies", sub: "Adrenaline-packed", more: "action", items: s.actionMovies || [] },
         { title: "Korean Dramas", sub: "Latest K-Dramas", more: "kdrama", items: s.koreanDramas || [] },
         { title: "BL Series", sub: "Boys love stories", more: "bl", items: s.blSeries || [] },
-        { title: "Comedy", sub: "Laugh out loud", more: "genres", items: s.comedy || [] }
+        { title: "Comedy", sub: "Laugh out loud", more: "comedy", items: s.comedy || [] }
       );
       renderRows(rows, all);
     } else if (view === "mylist") {
@@ -183,7 +185,11 @@ async function go(view) {
       const d = await fetchJSON(`${API}/anime/top?limit=100`);
       renderGrid(d.anime || [], "Anime");
     } else if (view === "genres") {
-      $("content").innerHTML = '<div class="empty">Pick a genre to browse 🎭</div>';
+      const d = await fetchJSON(`${API}/movie/genre/action?limit=60`);
+      renderGrid(d.movies || [], "Browse by Genre");
+    } else if (GENRE_VIEWS[view]) {
+      const d = await fetchJSON(`${API}/movie/genre/${GENRE_VIEWS[view]}?limit=80`);
+      renderGrid(d.movies || [], view[0].toUpperCase() + view.slice(1) + " Movies");
     }
   } catch (e) { $("content").innerHTML = `<div class="empty">Failed to load: ${e.message}</div>`; }
 }
