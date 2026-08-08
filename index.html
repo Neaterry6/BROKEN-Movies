@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BROKEN Movies — Stream Movies & Series</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="logo">🎬 BROKEN <span>Movies</span></div>
+  <div class="searchbar">
+    <input id="q" placeholder="Search movies & series..." onkeydown="if(event.key==='Enter')search()">
+    <button onclick="search()">Search</button>
+  </div>
+  <nav id="nav">
+    <button class="navbtn active" data-view="home" onclick="go('home')">Home</button>
+    <button class="navbtn" data-view="movies" onclick="go('movies')">Movies</button>
+    <button class="navbtn" data-view="series" onclick="go('series')">Series</button>
+    <button class="navbtn" data-view="nollywood" onclick="go('nollywood')">Nollywood</button>
+    <button class="navbtn" data-view="bl" onclick="go('bl')">BL</button>
+    <button class="navbtn" data-view="kdrama" onclick="go('kdrama')">K-Drama</button>
+    <button class="navbtn" data-view="hollywood" onclick="go('hollywood')">Hollywood</button>
+    <button class="navbtn" data-view="genres" onclick="go('genres')">Genres</button>
+  </nav>
+</header>
+
+<div class="container">
+  <div id="genrebar" class="genre-chips" style="display:none">
+    <span class="chip" onclick="genre('action')">Action</span>
+    <span class="chip" onclick="genre('comedy')">Comedy</span>
+    <span class="chip" onclick="genre('horror')">Horror</span>
+    <span class="chip" onclick="genre('romance')">Romance</span>
+    <span class="chip" onclick="genre('scifi')">Sci-Fi</span>
+    <span class="chip" onclick="genre('drama')">Drama</span>
+    <span class="chip" onclick="genre('animation')">Animation</span>
+    <span class="chip" onclick="genre('documentary')">Documentary</span>
+  </div>
+  <div id="content"><div class="loading"><div class="spinner"></div>Loading...</div></div>
+</div>
+
+<!-- Detail / Player modal -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>BROKEN Movies · powered by BROKEN API · creator: brokenvzn</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
