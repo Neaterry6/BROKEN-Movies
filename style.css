@@ -103,3 +103,37 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:11px}
 .cplay svg{width:18px;height:18px;fill:#000;margin-left:2px}
 .progress{position:absolute;bottom:0;left:0;right:0;height:4px;background:rgba(255,255,255,.25)}
 .progress>div{height:100%;background:var(--red)}
+
+/* Heart / favorite toggle */
+.card{position:relative}
+.fav-btn{position:absolute;top:8px;right:8px;z-index:5;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;backdrop-filter:blur(4px)}
+.fav-btn.on{background:var(--red)}
+.fav-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2}
+.fav-btn.on svg{fill:#fff;stroke:#fff}
+
+/* Episode picker */
+.epicker{position:fixed;bottom:80px;left:10px;right:10px;z-index:45;background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-height:55vh;overflow:auto;padding:14px}
+.epicker h4{font-size:13px;font-weight:800;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.epicker .close-ep{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer}
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px}
+.ep-btn{padding:9px 4px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:#fff;font-weight:700;font-size:12px;cursor:pointer}
+.ep-btn.active{background:var(--red);border-color:var(--red)}
+.ep-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Quality selector */
+.quality-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.q-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:#fff;font-weight:700;font-size:12px;cursor:pointer}
+.q-btn.active{background:var(--red);border-color:var(--red)}
+
+/* My list / continue rows */
+.section .row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+
+/* Live TV card */
+.live-card{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer}
+.live-card .lc-logo{width:46px;height:46px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:20px}
+.live-card img{width:100%;height:100%;object-fit:contain}
+.live-card .lc-name{font-weight:700;font-size:13px}
+.live-card .lc-meta{color:var(--muted);font-size:11px;display:flex;gap:6px;flex-wrap:wrap}
+.live-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:560px){.live-grid{grid-template-columns:1fr 1fr}}

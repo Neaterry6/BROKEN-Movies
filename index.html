@@ -47,6 +47,20 @@
   <button class="chip" onclick="genre('documentary')">Documentary</button>
 </div>
 
+<!-- Anime genre chips (shown in Anime view) -->
+<div class="chips" id="animeChips" style="display:none">
+  <button class="chip" onclick="animeGenre('action')">Action</button>
+  <button class="chip" onclick="animeGenre('romance')">Romance</button>
+  <button class="chip" onclick="animeGenre('fantasy')">Fantasy</button>
+  <button class="chip" onclick="animeGenre('comedy')">Comedy</button>
+  <button class="chip" onclick="animeGenre('horror')">Horror</button>
+  <button class="chip" onclick="animeGenre('scifi')">Sci-Fi</button>
+  <button class="chip" onclick="animeGenre('drama')">Drama</button>
+</div>
+
+<!-- Episode picker -->
+<div class="epicker" id="epicker" style="display:none"></div>
+
 <main class="container" id="content">
   <div class="loading"><div class="spinner"></div>Loading...</div>
 </main>
