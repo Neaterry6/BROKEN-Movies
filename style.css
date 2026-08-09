@@ -138,3 +138,6 @@ footer{text-align:center;padding:20px;color:var(--muted);font-size:11px}
 .live-card .lc-meta{color:var(--muted);font-size:11px;display:flex;gap:6px;flex-wrap:wrap}
 .live-grid{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:560px){.live-grid{grid-template-columns:1fr 1fr}}
+
+/* trailer button */
+.btn-trailer{background:linear-gradient(135deg,#ff2eab,#6366f1);border:none}

@@ -240,6 +240,7 @@ async function openDetail(dataStr) {
     </div>
     <div class="modal-desc">${m.description || "No description available."}</div>
     <div class="mactions">
+      ${m.detailPath ? `<button class="btn btn-trailer" onclick="playTrailer('${(m.title || '').replace(/'/g, '\\' )}')">▶ Trailer</button>` : ""}
       ${m.detailPath ? `<button class="btn btn-play" onclick="loadStream('${m.detailPath}','${m.id}','${isSeries}','1','1')">${playSvg}Play</button>` : ""}
       ${m.detailPath && isSeries ? `<button class="btn btn-dl" onclick="openEpPicker('${m.detailPath}','${m.id}','${isSeries}')">🎬 Episodes</button>` : ""}
       ${m.detailPath ? `<button class="btn btn-dl" onclick="loadDownload('${m.detailPath}','${m.id}','${isSeries}','1','1')"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>Download</button>` : ""}
@@ -253,6 +254,21 @@ async function openDetail(dataStr) {
 
 let curTitle = "", curCover = "", curTypeId = 0, curType = "";
 function setCur(m) { curTitle = m.title; curCover = m.cover; curTypeId = m.typeId; curType = m.type; }
+
+async function playTrailer(title){
+  const player = $("player");
+  const qr = $("qualityRow");
+  if (qr) qr.style.display = "none";
+  player.style.display = "block";
+  player.innerHTML = '<div class="loading">Loading trailer...</div>';
+  try{
+    const s = await fetchJSON(`${API}/play/search?q=${encodeURIComponent(title + " official trailer")}&limit=1`);
+    const v = (s.results || s.videos || [])[0];
+    const ytId = v ? (v.id || (v.url||"").match(/v=([\w-]{11})/)?.[1]) : null;
+    if(!ytId){ player.innerHTML = '<div class="empty">No trailer found.</div>'; return; }
+    player.innerHTML = `<iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px" src="https://www.youtube.com/embed/${ytId}" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
+  }catch(e){ player.innerHTML = `<div class="empty">Trailer error: ${e.message}</div>`; }
+}
 
 async function loadStream(detailPath, id, isSeries, se, ep, title, cover, typeId, type) {
   const player = $("player");
