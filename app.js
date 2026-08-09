@@ -1,5 +1,5 @@
 // BROKEN Movies — consumes BROKEN API. Netflix-style UI with hero + many movie rows.
-const API = "https://broken-api-production-31d5.up.railway.app/api";
+const API = "https://api.brokenvzn.de5.net/api";
 const $ = (id) => document.getElementById(id);
 let currentView = "home";
 // Genre views reachable via See All / nav — map view name to API genre slug
