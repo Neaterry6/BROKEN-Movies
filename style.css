@@ -1,12 +1,12 @@
 :root{
-  --bg:#0f0f14;--bg2:#17171f;--card:#1c1c26;--border:#282833;--red:#e50914;--yellow:#f5c518;--text:#fff;--muted:#8a8a9a;--radius:10px
+  --bg:#08080e;--bg2:#11111a;--card:#1a1a28;--border:#1f1f2e;--red:#ff2eab;--yellow:#00f0ff;--text:#fff;--muted:#a0a0b5;--radius:10px
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh;padding-bottom:80px}
 /* top app bar */
-.appbar{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#1a0b2e,#0f0f14);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+.appbar{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#1a0b2e,#08080e);padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
 .appbar .brand{display:flex;align-items:center;gap:8px}
-.appbar .brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--red),#ff4d4d);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+.appbar .brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#ff2eab,#6366f1);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
 .appbar .brand b{font-size:17px;letter-spacing:.3px}
 .appbar .brand b span{color:var(--red)}
 .appbar .actions{display:flex;gap:6px}
