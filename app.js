@@ -114,7 +114,7 @@ function renderGrid(items, title, sub) {
   c.innerHTML = `${title ? `<div class="page-title">${esc(title)}</div>` : ""}${sub ? `<div class="page-sub">${esc(sub)}</div>` : ""}<div class="grid">${items.map(card).join("")}</div>`;
 }
 
-function showLoading() { $("content").innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>'; }
+function showLoading() { $("content").innerHTML = '<div class="loading"><div class="loader-pop">🍿</div><div class="loader-cam">🎥</div><div class="loader-text"><span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div></div>'; }
 // Resilient fetch: try local backend first, then remote, with a retry.
 async function api(ep, tries = 2) {
   const urls = [`${API_LOCAL}${ep}`, `${API_REMOTE}${ep}`];
