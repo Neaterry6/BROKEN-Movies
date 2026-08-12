@@ -114,7 +114,7 @@ function renderGrid(items, title, sub) {
   c.innerHTML = `${title ? `<div class="page-title">${esc(title)}</div>` : ""}${sub ? `<div class="page-sub">${esc(sub)}</div>` : ""}<div class="grid">${items.map(card).join("")}</div>`;
 }
 
-function showLoading() { $("content").innerHTML = '<div class="loading"><div class="loader-logo"><div class="ring"></div><div class="badge"><svg viewBox="0 0 24 24" fill="none"><g stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6.5" width="11.5" height="8.4" rx="1.8"/><path d="M4 9.6h11.5"/><path d="M8 6.5V5.2A1.2 1.2 0 0 1 9.2 4h.4"/><path d="M12.5 6.5V4.9A.9.9 0 0 0 11.6 4h-.3"/></g><path d="M18 10.2a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6z" fill="#fff"/><g fill="#ffd24a"><circle cx="6" cy="17.6" r="1"/><circle cx="8.8" cy="18.4" r="1.1"/><circle cx="11.6" cy="17.2" r=".9"/></g></svg></div></div><div class="loader-text"><span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div></div>'; }
+function showLoading() { $("content").innerHTML = '<div class="loading"><div class="loader-logo"><div class="ring"></div><div class="badge"><span class="l-emoji">🍿🎥</span><span class="l-txt">BROKEN <span>MOVIES</span></span></div></div><div class="loader-text"><span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div></div>'; }
 // Resilient fetch: try local backend first, then remote, with a retry.
 async function api(ep, tries = 2) {
   const urls = [`${API_LOCAL}${ep}`, `${API_REMOTE}${ep}`];
