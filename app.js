@@ -165,7 +165,7 @@ $("app").addEventListener("scroll", () => {
   });
 }, { passive: true });
 
-function showLoading() { $("content").innerHTML = '<div class="loading"><div class="loader-logo"><div class="ring"></div><div class="badge"><span class="l-emoji">🍿🎥</span><span class="l-txt">BROKEN <span>MOVIES</span></span></div></div><div class="loader-text"><span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div></div>'; }
+function showLoading() { $("content").innerHTML = '<div class="loading"><div class="loader-logo"><div class="ring"></div><div class="badge"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="none" stroke="#ff3b5c" stroke-width="4.5"/><circle cx="32" cy="32" r="29" fill="rgba(255,59,92,0.14)"/><polygon points="27,20 46,32 27,44" fill="#ff3b5c" stroke="#ff5c78" stroke-width="1.5"/><polygon points="26,19 46,32 26,45" fill="#fff" opacity="0.12"/></svg><span class="l-pop">🍿</span><span class="l-txt"><span class="w">BROKEN</span> <span class="r">MOVIES</span></span><span class="l-tag">Stream</span></div></div><div class="loader-text"><span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div></div>'; }
 // Resilient fetch: try local backend first, then remote, with a retry.
 async function api(ep, tries = 2) {
   const urls = [`${API_LOCAL}${ep}`, `${API_REMOTE}${ep}`];
