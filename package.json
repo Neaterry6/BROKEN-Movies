@@ -1,0 +1,17 @@
+{
+  "name": "broken-movies",
+  "version": "1.0.0",
+  "description": "BROKEN Movies — streaming site with dedicated backend (OmniSave scrapers)",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}

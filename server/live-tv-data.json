@@ -1,0 +1,237 @@
+[
+ {
+  "name": "Action Hollywood",
+  "url": "https://amg01076-lightningintern-actionhollywood-samsungau-rs69y.amagi.tv/ts-eu-w1-n2/playlist/amg01076-lightningintern-actionhollywood-samsungau/cb573d1e7e6c648f99d43962cef64982847b3dcb0e6c886470af4a9765d97800dbe8ae84ae5b910c4c9e1fc061017d360439cd1dd56c49c1da63b820743c4b21fdcde00080dd0d0cb1df11292ca36265299a7369cc350f7bd2ec5a2f803ebe764c53cb017c593f88f258a97e4cc59e0a957f39e8fc8b307b24455a9c5a43e6a64cb7fae75914df68a4e4014f942c41fa83439fd501b386dc5d8347d370a714cec7a68bd61680e4f1598b6f5cc6e739581fb7a73bf4e754b1df886038ee0042243f73966917632c46e066454ef1fccac505b5739cca4d150346db60f82fe450ce4bd369c7812ec0cdfbff082d18a2d6526226efc9a18df42609700791adc4d2697595fa153712873d986a1c319ef9c40397833ba2f672d5fa394678f7984bcdc9e9c3f7e6d903dc04dad7f89d0a474c480d16c908f1cd23887f9d3083e6270c700104a1935ec1c6fe5b336940cfc07ddc0114b4dec4d28b56759a2e4b14b820ea5a036dde3d2329b67ab7c96a1efc4c60b23c33ff57229302ade85e9289efa5576bfb8ebd019509c8ba05d5fa07d31d1f5110bcff291f080c4ad9e06202276a8122c0d6d9ea630610e6949cae98b359b1b98fe36aea8310eca8cabb80b14ac1f8d5ac67bf/108/1920x1080_4716800/index.m3u8",
+  "source": "amg01076-lightningintern-actionhollywood-samsungau-rs69y.amagi.tv"
+ },
+ {
+  "name": "Anand TV",
+  "url": "https://live-anandtv.anandmedia.net/anandtvapp/anandtv/tracks-v1a1/mono.m3u8",
+  "source": "live-anandtv.anandmedia.net"
+ },
+ {
+  "name": "CBS",
+  "url": "https://trs1.aynaott.com/cbs/tracks-v1a1/mono.ts.m3u8",
+  "source": "trs1.aynaott.com"
+ },
+ {
+  "name": "Cartoon",
+  "url": "http://23.237.104.106:8080/USA_CARTOON_NETWORK/index.m3u8",
+  "source": "23.237.104.106:8080"
+ },
+ {
+  "name": "Cartoon",
+  "url": "https://3rscartoonmovies.elektriko4444.workers.dev/kolet.m3u8",
+  "source": "3rscartoonmovies.elektriko4444.workers.dev"
+ },
+ {
+  "name": "Cartoon",
+  "url": "https://daiconnect.com/live/hls/tvup/rk-cartoonclassics/578f4b7eb725168349ec0af81b21d388/index.m3u8",
+  "source": "daiconnect.com"
+ },
+ {
+  "name": "Classic Arts",
+  "url": "https://classicarts.akamaized.net/hls/live/1024257/CAS/master_720p30.m3u8",
+  "source": "classicarts.akamaized.net"
+ },
+ {
+  "name": "Classic Movies",
+  "url": "https://rpn.bozztv.com/gusa/gusa-tvsclassicmovies/tracks-v1a1/mono.m3u8?nimblesessionid=1678858694",
+  "source": "rpn.bozztv.com"
+ },
+ {
+  "name": "Disney Channel",
+  "url": "http://40.160.24.52/Disney_Channel_HD/index.m3u8",
+  "source": "40.160.24.52"
+ },
+ {
+  "name": "Disney JR",
+  "url": "https://40.160.24.52/Disney_JR/tracks-v1a1/mono.ts.m3u8",
+  "source": "40.160.24.52"
+ },
+ {
+  "name": "Disney JR",
+  "url": "https://trs1.aynaott.com/disneyjr/tracks-v1a1/mono.ts.m3u8",
+  "source": "trs1.aynaott.com"
+ },
+ {
+  "name": "Disney XD",
+  "url": "http://23.237.104.106:8080/USA_DISNEY_XD/index.m3u8",
+  "source": "23.237.104.106:8080"
+ },
+ {
+  "name": "Disney XD",
+  "url": "https://40.160.24.52/DISNEY_XD_HD/tracks-v1a1/mono.ts.m3u8",
+  "source": "40.160.24.52"
+ },
+ {
+  "name": "Fox News",
+  "url": "http://247preview.foxnews.com/hls/live/2020027/fncv3preview/primary.m3u8",
+  "source": "247preview.foxnews.com"
+ },
+ {
+  "name": "Fox News",
+  "url": "http://40.160.24.52/FOX_NEWS/index.m3u8",
+  "source": "40.160.24.52"
+ },
+ {
+  "name": "Fox News",
+  "url": "https://fox-foxnewsnow-samsungus.amagi.tv/playlist720p.m3u8",
+  "source": "fox-foxnewsnow-samsungus.amagi.tv"
+ },
+ {
+  "name": "Fox News",
+  "url": "https://radiovid.foxnews.com/hls/live/661547/RADIOVID/index_2692.m3u8",
+  "source": "radiovid.foxnews.com"
+ },
+ {
+  "name": "Great Movies",
+  "url": "https://amg01753-narrativeentert-greatmovies-samsunguk-7z6eh.amagi.tv/ts-eu-w1-n2/playlist/amg01753-narrativeentert-greatmovies-samsunguk/cb573d1e7e6c648f99d43962cef64982957b3dcb0e6c886470af4a9765d96300dbf9b9c8fd3ab13c1ec0468a710b6d5a4d1e954f8722588fce12ae5937650705dad8ee2ebecc4072eb9c102f29b4641d57ee166ea8412e5e95a916018e38f55e0010e30627161185af06f0234dc48403957f378ca5df6627745b4fe2020fbcfc0bb39cb00b149a35beb41f4f8b2c43f59614cb854dbed4d15f83448772f0099c93a68ace428b82977eab06e1645a5d7529cc822ac1fb6ddca8f2d7cb721052243072a4c4bdf74939944e422e8995a99e438fd94a1447fb0616bd12914c854aea21ca5be489dac3dcdbbf222159c4807b1847c085c0ea9b7513f70adaa4fbd4707dd6da157f48da5710434126bdf2d11d88cf14d9e36dd5f4213131ce845dc0dd938deba2824398659b97afd8144c486a0a0b9e1d9acc3588609d59b8de1f246b48468693418bd38a097e3119c6c875fc27369597cb8fd6053e8a471e59e36f901b2664de3b6179aa7cadc3723cc77152d76273a20975ad4dfeb120f0e7e8e4003aa7d78817ac38a1e65ca09b68ce4c325d10bcfb282d271d2daa990c6a1977c54ceadad2a31b240feefec1fb806330083712586fdab0b390fa422eb0ac7013a7f5978190cb7623fa22488a19025e/124/640x360_1387360/index.m3u8",
+  "source": "amg01753-narrativeentert-greatmovies-samsunguk-7z6eh.amagi.tv"
+ },
+ {
+  "name": "Kartoon Channel",
+  "url": "https://amg01076-lightningintern-kartoonchannel-samsungnz-t8blu.amagi.tv/ts-eu-w1-n2/playlist/amg01076-lightningintern-kartoonchannel-samsungnz/cb573f1a6570678a84cf3e78d1f84882847b3dcb0e6c886470af4a9765d97800dbe8ae84ae5b910c4c9e1fc061017d360439cd1dd56c49c1da63b820743c4b21fdcde00080dd0d0cb1df11292ca36265299a7369cc350f7bd2ec5a2f803ebe764c53cb017c593f88f258af734cc59e0a957f39e8fc8b307b24455a9c5a43e6a64cb7aeb05c4dde64a4b9014ec02c45fa83439fd501b381dc52834a8422a740cec7a38a8543d1e42c52937f8ab5a2c54007fbb54ad1a468b8d38e6c3ddc423c470a50f5d1eb942c12a7378ed8659db1d24bf001da8165a06d32a9099b4efe5ee2ad07c8c5932981beb3dd575337e6b733d1a53d87d2e8cd1449d550f2b0eed47d7598bc7312229b3d8976726ad995cf65e7db7ed2fec5a694105d3b4eab67a5ae12c370d3c73abd28cfd5fd9b3c0d6066133dbf52b091571648b77785c10928504145e2cf1b94c69169396c4b89974d943d2ff98adbcd8f557bfd69150cbc3b9943533885744d6cf521fcad396ea22f1eca606eac1666d602b49304c18af7a94637bcd5c202d86aecbe059bb621a17f335407fca37e0a0b1c3380a0364d0378c544f6da85b4245e4ebfa1bf8baa390f0e37135d1b98a2b620e9e9ee1d5d47911d761a377a71b10bd96ed30533700dc10cdca10c34c8461624e8a3304a492ef1ecb4928cc2c554bf1c829baad94ef4fae70c5517019fc4d9785e570348f7561a1f3e0c/147/1920x1080_4716800/index.m3u8",
+  "source": "amg01076-lightningintern-kartoonchannel-samsungnz-t8blu.amagi.tv"
+ },
+ {
+  "name": "Movie Box",
+  "url": "https://3rsmoviebox.elektriko4444.workers.dev/moon.m3u8",
+  "source": "3rsmoviebox.elektriko4444.workers.dev"
+ },
+ {
+  "name": "Movie Sphere",
+  "url": "https://moviesphereuk-samsunguk.amagi.tv/720p-vtt/index.m3u8",
+  "source": "moviesphereuk-samsunguk.amagi.tv"
+ },
+ {
+  "name": "Nat Geo Wild",
+  "url": "http://217.20.112.199:8080/natgeowild/index.m3u8",
+  "source": "217.20.112.199:8080"
+ },
+ {
+  "name": "Nickelodeon",
+  "url": "http://23.237.104.106:8080/USA_NICKELODEON/index.m3u8",
+  "source": "23.237.104.106:8080"
+ },
+ {
+  "name": "Nickelodeon",
+  "url": "https://trs1.aynaott.com/nicklodean/tracks-v1a1/mono.ts.m3u8",
+  "source": "trs1.aynaott.com"
+ },
+ {
+  "name": "Nostalgia Movies",
+  "url": "https://rpn.bozztv.com/gusa/gusa-tvsNostalgiaMovies/tracks-v1a1/mono.m3u8?nimblesessionid=1678859800",
+  "source": "rpn.bozztv.com"
+ },
+ {
+  "name": "PBS Kids",
+  "url": "https://livestream.pbskids.org/out/v1/14507d931bbe48a69287e4850e53443c/est_2.m3u8",
+  "source": "livestream.pbskids.org"
+ },
+ {
+  "name": "Plex",
+  "url": "https://22985209144b4ff78289fbb19f55e93e.mediatailor.us-east-1.amazonaws.com/v1/manifest/04fd913bb278d8775298c26fdca9d9841f37601f/Plex_TWDUniverseExperience/7d51336d-8c0a-4938-8711-becd1b4b1048/5.m3u8",
+  "source": "22985209144b4ff78289fbb19f55e93e.mediatailor.us-east-1.amazonaws.com"
+ },
+ {
+  "name": "Plex",
+  "url": "https://bad6f547d5364da0b2fe3080c5a48068.mediatailor.us-east-1.amazonaws.com/v1/manifest/44f73ba4d03e9607dcd9bebdcb8494d86964f1d8/Plex_MaverickBlackCinema/4e8e6881-26c4-4c3c-a316-33d664a677da/5.m3u8",
+  "source": "bad6f547d5364da0b2fe3080c5a48068.mediatailor.us-east-1.amazonaws.com"
+ },
+ {
+  "name": "Plex",
+  "url": "https://epg.provider.plex.tv/library/parts/6a1610bebdf296985fd95603-5fc705ff2f220e002d5e6bce/variant.m3u8?x-plex-token=88wXNDZzYJTtbTzaF8qm&x-plex-advertising-identifier=&x-plex-client-identifier=77c2a549-8b5a-4598-bb78-647e000f288b&x-plex-playback-id=p_c7ec6adb-0507-4da6-af6d-ff295469cc7e&x-plex-playback-session-id=&x-plex-session-id=&x-plex-device=Android&x-plex-device-name=Plex+Mediaverse&x-plex-advertising-donottrack=0&x-plex-drm=&x-plex-model=&x-plex-platform=Chrome&x-plex-platform-version=149.0.7827.91&x-plex-product=Plex+Mediaverse&x-plex-device-screen-resolution=&x-plex-device-vendor=&x-plex-version=&x-plex-provider-streaming-start=1782554614&url=6bec84d3130bf528bb4d655ee22405bc-1a249ce73588fdce04fb140f550c83fee0572189c93e2178582e663e5b276ac986b964c0da722b5e3d3dc8fbd8a4ad7118d36d6cad50fc3713a241c7c9d1837cea40b2f5f0cb0fd98f3c916cd21c7948ce7ad953441017498aef055f35e80f8adec69ab8d0fd67a1265e78204bc23a1ea5c1edbb40ba48a1e22fdddf9fb48abec99890791e43bf9c147678779cca9ee7543536fef1f663e1e02aeee96c6bf35ae6bf3ed287754dede354e04a57bcda9c256c57534b5318919e91b48c5ae2a0985c50d22f536b07fb9c0ae9a9c788dd67",
+  "source": "epg.provider.plex.tv"
+ },
+ {
+  "name": "Plex",
+  "url": "https://f0691dfa0291449aa31c5f4f7e668d29.mediatailor.us-west-2.amazonaws.com/v1/manifest/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-798-MIRAMAXMOVIES-PLEX/f7c426b8-14c7-411b-8b0a-b58e03fad53d/5.m3u8",
+  "source": "f0691dfa0291449aa31c5f4f7e668d29.mediatailor.us-west-2.amazonaws.com"
+ },
+ {
+  "name": "Pop Kids",
+  "url": "https://amg01753-narrativeentert-popkids-lggb-xyy5k.amagi.tv/ts-eu-w1-n2/playlist/amg01753-narrativeentert-popkids-lggb/cb543d1e7e6c648f99d43e67d2ef46a1f9481fde1d6988693eb5518975d10725dce2b48be65b9e3608dd4087351a6c515677b24788255f9e966ac0573c7f0e64ebd8f2278cfe475bc9814b352fb07d0052f81e0dab5d375ff5a55a048c36b0392216eb02611f72aeb51bf22b07da810e82612995aad5633e63535e8f2002b7f902f6ef820c13892ef8ae194b923146e19056cadc1bedd5805fcc5e8177f7148093f1ddd20dd3d09663b452b0670f5e2628cf862e959e6f86b0e801876e9f493c7c7bc1e1f4d0473b83554a5d8a8ea1dd44d963040db8e31a519a068a468731f00be069f5a22634cecabf222159c4a41f415ec085c0ea9b55739d2c9783efcf7a7f98b9387940c67ee2ea4a528ed0c40e8dcf1997f976cbe4295514c99f5083c6f2a2e1b49f4595218a96a4c37d6b40650d0c8f45e2a23b837a943889de032d597a41afb15cd0c98c0d672c1cd0c016ff3b2f94f7c7c3d30730cf203c5feb6bd612454fc4266371e062a8ce6522d9685ddd676ab50164c06ff3ba25f9a29bd6073db4ccce0daa3cb8fb5984846fc30a1d5706a1fd255b372e2c809411675750cd43edddc3f935652de3f5c4f2c513080f36195706e9b1be90fa1853b0ac70452e09074d403b1d9278ebd673b17c36/39/1920x1080_5903040/index.m3u8",
+  "source": "amg01753-narrativeentert-popkids-lggb-xyy5k.amagi.tv"
+ },
+ {
+  "name": "Pop Kids",
+  "url": "https://amg01753-narrativeentert-tinypop-samsunguk-hvvb7.amagi.tv/ts-eu-w1-n2/playlist/amg01753-narrativeentert-tinypop-samsunguk/cb543d1e7e6c648f99d43e67d2ef46a1f9481fde1d6988693eb5518975d10725dce2b48be65b9e3608dd4087351a6c515677b24788255f9e966ac0573c7f0e64ebd8f2278cfe475bc9814b352fb07d0052f81e0dab5d375ff5a55a048c36b0392216eb02611f72aeb51bf22b07da810e82612995aad5633e63535e8f2002b7f902f6ef820c13892ef8ae194b923146e19056cad31ae9d4dd5c9f5e8177f7148093f1ddd20dd3d09663b452b0670f5e2628cf862e959e6f86b0e801876e9f493c7c7bc1e1f4d0473b83554a5d8a8ea1dd44d963040db8e31a519a068a468731f00be069f5a22634cecabf222159c4a41f415ec085c0ea9b55739d2c9783efcf7a7f98b9387940c67ee2ea4a528ed0c40e8dcf1997f976cbe4295514c99f5083c6f2a2e1b49f4595218a96a4c37d6b40650d0c8f45e2a23b837a943889de032d597a41afb15cd0c98c0d672c1cd0c016ff3b2f94f7c7c3d30730cf203c5feb6bd612454fc4266371e062a8ce6522d9685ddd676ab50164c06ff3ba25f9a29bd6073db4ccce0daa3cb8fb5984846fc30a1d5706a1fd255b372e2c809411675750cd43edddc3f935652de3f5c4f2c513080f36195706e9bbb390fa1a53b0ac704b9145d68f9dd5c58d25ed10f6f43d78/94/1920x1080_5903040/index.m3u8",
+  "source": "amg01753-narrativeentert-tinypop-samsunguk-hvvb7.amagi.tv"
+ },
+ {
+  "name": "Rakuten",
+  "url": "https://amg00627-amg00627c28-rakuten-uk-3984.playouts.now.amagi.tv/ts-eu-w1-n2/playlist/amg00627-banijayfast-mrbeanukcc-rakutenuk/cb543d1e7e6c648f99d43e67d8ef43a6f9481fde1d6988693eb5518975d10725dce2b48be65b9e3608dd4087351a6c515677b24788255f9e966ac0573c7f0e64ebd8f2278cfe475bc9814b352fb07d0052f81e0dab5d375ff5a55a048c36b0392216eb02611f72aeb51bf22b07da810e82612995aad5633e63535e8f2002b7f902f6ef820c13892ef8ae194b923146e19056cdd715b9d4d75e985e8176a0418093f1ddd20d8b8ec530b454b432500b212a9c852bc7c86f86b0e801876e9f493c7c7bc1e1f4d0473b83554a5d8a8ea1dd44d963040db8e31a519a068a468731f00be069f5a22634cecabf222159c4a41f415ec085c0ea9b55739d2c9783efcf7a7f98b9387940c67ee2ea4a528ed0c40e8dcf1997f976cbe4295514c99f5083c6f2a2e1b49f4595218a96a4c37d6b40650d0c8f45e2a23b837a943889de032d597a41afb15cd0c98c0d672c1cd0c016ff3b2f94f7c7c3d30730cf203c5feb6bd612454fc4266371e062a8ce6522d9685ddd676ab50164c06ff3ba25f9a29bd6073db4ccce0daa3cb8fb5984846fc30a1d5706a1fd255b372e2c809411675750cd43edddc3f935652de3f5c4f2c513080f36195706e8b3b5257bef46d788a7a78e78b57cf39e2e33597b15ac713329aa/125/1920x1080_6046040/index.m3u8",
+  "source": "amg00627-amg00627c28-rakuten-uk-3984.playouts.now.amagi.tv"
+ },
+ {
+  "name": "Rakuten",
+  "url": "https://amg00627-amg00627c31-rakuten-fr-3991.playouts.now.amagi.tv/ts-eu-w1-n2/playlist/amg00627-banijayfast-mrbeanfrcc-rakutenfr/cb543d1e7e6c648f99d43761cef044a7f9481fde1d6988693eb5518975d10725dce2b48be65b9e3608dd4087351a6c515677b24788255f9e966ac0573c7f0e64ebd8f2278cfe475bc9814b352fb07d0052f81e0dab5d375ff5a55a048c36b0392216eb02611f72aeb51bf22b07da810e82612995aad5633e63535e8f2002b7f902f6ef820c13892ef8ae194b923146e19056c0814db285d00d965e8176a0468093f1ddd20dd0d49964b456e3360b0876249dd12097cb6f86b0e801876e9f493c7c7bc1e1f4d0473b83554a5d8a8ea1dd44d963040db8e31a519a068a468731f00be069f5a22634cecabf222159c4a41f415ec085c0ea9b55739d2c9783efcf7a7f98b9387940c67ee2ea4a528ed0c40e8dcf1997f976cbe4295514c99f5083c6f2a2e1b49f4595218a96a4c37d6b40650d0c8f45e2a23b837a943889de032d597a41afb15cd0c98c0d672c1cd0c016ff3b2f94f7c7c3d30730cf203c5feb6bd612454fc4266371e062a8ce6522d9685ddd676ab50164c06ff3ba25f9a29bd6073db4ccce0daa3cb8fb5984846fc30a1d5706a1fd255b372e2c809411675750cd43edddc3f935652de3f5c4f2c513080f36195706e9bbbf90fa1835bcac70c4a398629ee97bb80a93a548a1ad0aa6/98/1920x1080_6046040/index.m3u8",
+  "source": "amg00627-amg00627c31-rakuten-fr-3991.playouts.now.amagi.tv"
+ },
+ {
+  "name": "Rakuten",
+  "url": "https://amg00627-amg00627c40-rakuten-uk-5725.playouts.now.amagi.tv/playlist/amg00627-amg00627c40-rakuten-uk-5725/playlist.m3u8",
+  "source": "amg00627-amg00627c40-rakuten-uk-5725.playouts.now.amagi.tv"
+ },
+ {
+  "name": "Rakuten",
+  "url": "https://c0c65b821b3542c3a4dca92702f59944.mediatailor.us-east-1.amazonaws.com/v1/manifest/04fd913bb278d8775298c26fdca9d9841f37601f/RakutenTV-eu_BabySharkTV/5eceed4d-1e95-4bba-b103-c3cef8122391/2.m3u8",
+  "source": "c0c65b821b3542c3a4dca92702f59944.mediatailor.us-east-1.amazonaws.com"
+ },
+ {
+  "name": "Shemaroo",
+  "url": "https://amg00864-shemarooenterta-shemabollywood-ono-nlwbw.amagi.tv/ts-us-w2-n1/playlist/amg00864-shemarooenterta-shemabollywood-ono/cb573d1e7e6c648f99d43962cef64982847b3dcb0e6c886470af4a9765d97800dbe8ae84ae5b910c4c9e1fc061017d360439cd1dd56c49c1da63b820743c4b21fdcde00080dd0d0cb1df11292ca36265299a7369cc350f7bd2ec5a2f803ebe764c53cb017c593f88f258a97e4cc59e0a957f39e8fc8b307b24455a9c5a43e6a64cb7aae6554d8a68f3b1014f942c47fa83439fd501b280d60983108077a21dcfc3a282da15d1e4f1598b6f5cc6e739581fb7a73bf4e754b1df886038ee0042243f73966917632c46e066454ef1fccac505b5739cca4d150346db60f82fe450ce4bd369c7812ec0cdfbff082d18a2d6526226efc9a18df42609700791adc4d2697595fa153712873d986a1c319ef9c40397833ba2f672d5fa394678f7984bcdc9e9c3f7e6d903dc04dad7f89d0a474c480d16c908f1cd23887f9d3083e6270c700104a1935ec1c6fe5b336940cfc07ddc0114b4dec4d28b56759a2e4b14b820ea5a036dde3d2329b67ab7c96a1efc4c60b23c33ff57229302ade85e9289efa5576bfb8ebd019509c8ba05d5fa07d31d1f5110bcff291f080c4ad9e06202276a8122c0d6d9ea630610e6949cad97b35988828fe36a9c7ce83d61e4a3061fd2605070387d00/137/1920x1080_6046040/index.m3u8",
+  "source": "amg00864-shemarooenterta-shemabollywood-ono-nlwbw.amagi.tv"
+ },
+ {
+  "name": "TeenNick",
+  "url": "http://109.233.89.173/TeenNick/index.m3u8",
+  "source": "109.233.89.173"
+ },
+ {
+  "name": "TeenNick",
+  "url": "https://trs1.aynaott.com/teennick/tracks-v1a1/mono.ts.m3u8",
+  "source": "trs1.aynaott.com"
+ },
+ {
+  "name": "Toon Goggles",
+  "url": "https://amg01329-otterainc-toongoggles-samsungau-ad-4c.amagi.tv/ts-eu-w1-n2/playlist/amg01329-otterainc-toongoggles-samsungau/cb543d1e7e6c648f99d43665cef046a8f9591fde1d6988693eb5518975d1073edce2a59caa08ff16388f1ede7f0a66413a3e951fda77118fd87eb141453c5728cfffe729a2c05616b7db083429b56a062a866a68ac39437ed0e21f48a238b6720a5aa82a66443d80b846ac725adb80148b61299bce8c37683f03409a5e5afba358b1ebe55846d96af0e54e55922e40b39f43c8821da6888058ca5e8570f71098c7f38fd312d1d2f30393758a8afbb64307fbae5ed1ae73bfdd9f7b309d03592c7c74c0d3597ad35efc21625aeaf6c8be1f9f59aedb66e9f454ca60f82fe450ea2f8a70c7812ec0cddb9f620b5585c2496824a1aa8c8bfc3a2087ab9ac8e6f07c6690fa1879089c238862630f99f3cf1b93d055b88263d4e4274d6380a64c95cbe6d8afa8db1ed565ebd7e49438754b612f0b9212f7c93a957a8b38e0e53b15716108ed965ccf83997935614489c91ef71b09b6d68ecc8e5a638430550aa6309968046acd266533b07eaed46f3afb5360ef0234f55c3a9751bce97c87c0f5d1466ae5909738bc05899205ddf10eac174c7a0aa1fd215a05013de7e768093f6ed00783f7cff27c1d0ffcfdafa698b359e4b38ee36ae883fdc70ad76058aacf2f8e9967a5a4/88/1280x720_3071200/index.m3u8",
+  "source": "amg01329-otterainc-toongoggles-samsungau-ad-4c.amagi.tv"
+ },
+ {
+  "name": "Tubi",
+  "url": "https://aegis-cloudfront-1.tubi.video/a0ad4b53-ab3a-48dd-be12-bc7f533c372c/1080p-cc/index.m3u8",
+  "source": "aegis-cloudfront-1.tubi.video"
+ },
+ {
+  "name": "Western Movies",
+  "url": "https://rpn.bozztv.com/gusa/gusa-tvswesternmovies/tracks-v1a1/mono.m3u8?nimblesessionid=1678862697",
+  "source": "rpn.bozztv.com"
+ },
+ {
+  "name": "Xumo",
+  "url": "https://d1bl6tskrpq9ze.cloudfront.net/hls/master.m3u8?ads.xumo_channelId=99984003",
+  "source": "d1bl6tskrpq9ze.cloudfront.net"
+ },
+ {
+  "name": "Xumo",
+  "url": "https://d368vp0qqzvkid.cloudfront.net/manifest/3fec3e5cac39a52b2132f9c66c83dae043dc17d4/prod_default_nbc-direct/977600a8-2421-480c-b7d6-a1abda90987b/4.m3u8?ads.xumo_channelId=88889711a&ads.xumo_ifaType=&ads.xumo_providerId=3822&ads.xumo_providerName=NBCNBA",
+  "source": "d368vp0qqzvkid.cloudfront.net"
+ },
+ {
+  "name": "Xumo",
+  "url": "https://d4whmvwm0rdvi.cloudfront.net/manifest/3fec3e5cac39a52b2132f9c66c83dae043dc17d4/prod_default_xumo-nbcu-linear/d9b8bc06-e4c2-4a40-91a5-c17f56c5dc41/4.m3u8?ads.xumo_channelId=99993008",
+  "source": "d4whmvwm0rdvi.cloudfront.net"
+ },
+ {
+  "name": "Xumo",
+  "url": "https://xumo-xumoent-ch828-w6val.fast.nbcuni.com/live/master_5.m3u8",
+  "source": "xumo-xumoent-ch828-w6val.fast.nbcuni.com"
+ },
+ {
+  "name": "beIN Sports",
+  "url": "https://bein-xtra-bein.amagi.tv/playlist.m3u8",
+  "source": "bein-xtra-bein.amagi.tv"
+ }
+]

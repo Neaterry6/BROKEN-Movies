@@ -1,5 +1,7 @@
-// BROKEN Movies — glassmorphism UI consuming BROKEN API.
-const API = "https://api.brokenvzn.de5.net/api";
+// BROKEN Movies — glassmorphism UI. Uses the dedicated same-origin backend
+// (/api) when deployed, otherwise falls back to the BROKEN API.
+const API_LOCAL = "/api";
+const API_REMOTE = "https://api.brokenvzn.de5.net/api";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 let currentTab = "home";
@@ -111,10 +113,23 @@ function renderGrid(items, title, sub) {
 }
 
 function showLoading() { $("content").innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>'; }
-async function fetchJSON(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error("HTTP " + r.status);
-  return r.json();
+// Resilient fetch: try local backend first, then remote, with a retry.
+async function api(ep, tries = 2) {
+  const urls = [`${API_LOCAL}${ep}`, `${API_REMOTE}${ep}`];
+  let lastErr = null;
+  for (let t = 0; t < tries; t++) {
+    for (const u of urls) {
+      try {
+        const r = await fetch(u, { signal: AbortSignal.timeout(45000) });
+        if (r.ok) {
+          const j = await r.json();
+          if (j && j.ok !== false) return j;
+          if (j && j.error) { lastErr = new Error(j.error); continue; }
+        }
+      } catch (e) { lastErr = e; }
+    }
+  }
+  throw lastErr || new Error("Failed to reach content service");
 }
 
 function setCatPills(pills, active, fn) {
@@ -172,7 +187,7 @@ async function go(tab) {
   showLoading();
   try {
     if (tab === "home") {
-      const d = await fetchJSON(`${API}/movie/home`);
+      const d = await api('/movie/home');
       const s = d.homepage || {};
       const all = [...(s.trendingNow || []), ...(s.nollywood || []), ...(s.actionMovies || [])];
       const cw = HISTORY.filter((h) => h.detailPath).slice(0, 8);
@@ -183,36 +198,36 @@ async function go(tab) {
       if (s.actionMovies) sections.push({ title: "Action", items: s.actionMovies, more: "go('action')" });
       renderHome(sections, all);
     } else if (tab === "movies") {
-      const d = await fetchJSON(`${API}/movie/home/trending?limit=100`);
+      const d = await api('/movie/home/trending?limit=100');
       renderGrid(d.movies || d.results || [], "Movies", "All movies");
     } else if (tab === "anime") {
-      const d = await fetchJSON(`${API}/anime/top?limit=80`);
+      const d = await api('/anime/top?limit=80');
       renderGrid(d.anime || d.results || d.movies || [], "Anime", "Top anime");
     } else if (tab === "nollywood") {
-      const d = await fetchJSON(`${API}/nollywood`);
+      const d = await api('/nollywood');
       renderGrid(d.movies || d.results || d.series || [], "Nollywood", "Nigerian films");
     } else if (tab === "kdrama") {
-      const d = await fetchJSON(`${API}/kdrama`);
+      const d = await api('/kdrama');
       renderGrid(d.series || d.dramas || d.results || d.movies || [], "K-Drama", "Korean dramas");
     } else if (tab === "hollywood") {
-      const d = await fetchJSON(`${API}/movie/home/trending?limit=100`);
+      const d = await api('/movie/home/trending?limit=100');
       renderGrid(d.movies || d.results || [], "Hollywood", "Top films");
     } else if (tab === "bl") {
-      const d = await fetchJSON(`${API}/bl?limit=80`);
+      const d = await api('/bl?limit=80');
       renderGrid(d.series || d.movies || d.results || [], "BL Series", "Boys Love");
     } else if (tab === "history") {
       showHistory();
     } else if (tab === "live") {
-      const d = await fetchJSON(`${API}/tv-channels?limit=60`);
+      const d = await api('/tv-channels?limit=60');
       renderLive(d.channels || d.results || []);
     } else if (tab === "mylist") {
       renderGrid(MYLIST, "My List ♥", "Your saved titles");
     } else if (tab === "trending") {
-      const d = await fetchJSON(`${API}/movie/home/trending?limit=100`);
+      const d = await api('/movie/home/trending?limit=100');
       renderGrid(d.movies || [], "Trending");
     } else if (tab === "genres" || GENRE_VIEWS[tab]) {
       setCatPills(["Action", "Comedy", "Horror", "Romance", "Sci-Fi", "Drama", "Animation", "Documentary"], null, "genre");
-      if (tab === "genres") { const d = await fetchJSON(`${API}/movie/home/trending?limit=80`); renderGrid(d.movies || [], "Genres", "Pick a genre"); }
+      if (tab === "genres") { const d = await api('/movie/home/trending?limit=80'); renderGrid(d.movies || [], "Genres", "Pick a genre"); }
       else genre(tab);
     }
   } catch (e) {
@@ -226,7 +241,7 @@ async function genre(g) {
   setCatPills(["Action", "Comedy", "Horror", "Romance", "Sci-Fi", "Drama", "Animation", "Documentary"], g, "genre");
   try {
     const slug = g.toLowerCase().replace("sci-fi", "scifi");
-    const d = await fetchJSON(`${API}/movie/genre/${slug}?limit=80`);
+    const d = await api(`/movie/genre/${slug}?limit=80`);
     renderGrid(d.movies || d.results || [], "Genre · " + g);
   } catch (e) { $("content").innerHTML = `<div class="empty">Genre failed: ${esc(e.message)}</div>`; }
 }
@@ -260,7 +275,7 @@ async function doSearch(q) {
   if (!q) return;
   showLoading();
   try {
-    const d = await fetchJSON(`${API}/search?q=${encodeURIComponent(q)}&limit=60`);
+    const d = await api(`/search?q=${encodeURIComponent(q)}&limit=60`);
     const results = d.results || d.movies || d.anime || [];
     renderGrid(results, `Results · ${q}`);
   } catch (e) { $("content").innerHTML = `<div class="empty">Search failed: ${esc(e.message)}</div>`; }
@@ -277,7 +292,7 @@ async function openDetail(jsonStr) {
   const fav = isFav(m.id) ? "♥ Remove" : "♡ Save";
   try {
     if (m.detailPath) {
-      try { const d = await fetchJSON(`${API}/detail?path=${encodeURIComponent(m.detailPath)}`); if (d.subject) Object.assign(m, d.subject); } catch {}
+      try { const d = await api(`/detail?path=${encodeURIComponent(m.detailPath)}`); if (d.subject) Object.assign(m, d.subject); } catch {}
     }
     const img = m.cover || m.image || "";
     detail.innerHTML = `
@@ -341,8 +356,7 @@ async function startPlay(detailPath, id, isSeries, se, ep, title, cover, typeId,
   openPlayer(title || "Now Playing");
   const vw = $("videoWrap"); vw.innerHTML = '<video id="video" controls playsinline></video>';
   try {
-    const url = `${API}/download?path=${encodeURIComponent(detailPath)}&id=${id}${isSeries ? `&se=${se || 1}&ep=${ep || 1}` : ""}`;
-    const d = await fetchJSON(url);
+    const d = await api(`/download?path=${encodeURIComponent(detailPath)}&id=${id}${isSeries ? `&se=${se || 1}&ep=${ep || 1}` : ""}`);
     const dl = d.downloads || [];
     const qr = $("qualityRow");
     if (dl.length > 1) {
@@ -360,7 +374,7 @@ async function pickQuality(detailPath, id, isSeries, se, ep, res, btn) {
   btn.classList.add("active");
   const vw = $("videoWrap"); vw.innerHTML = '<video id="video" controls playsinline></video>';
   try {
-    const d = await fetchJSON(`${API}/download?path=${encodeURIComponent(detailPath)}&id=${id}${isSeries ? `&se=${se}&ep=${ep}` : ""}`);
+    const d = await api(`/download?path=${encodeURIComponent(detailPath)}&id=${id}${isSeries ? `&se=${se}&ep=${ep}` : ""}`);
     const dl = d.downloads || [];
     const pick = dl.find((x) => String(x.resolution) === String(res)) || dl[0];
     if (pick && pick.url) attachVideo(pick.url, d.captions || []);
