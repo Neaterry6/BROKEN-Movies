@@ -2,41 +2,40 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Sign In · BROKEN Movies</title>
 <style>
-:root{--bg:#0f0f14;--bg2:#17171f;--card:#1c1c26;--border:#282833;--red:#e50914;--text:#fff;--muted:#8a8a9a}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-wrap{width:100%;max-width:400px}
-.brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:30px}
-.logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--red),#ff4d4d);display:flex;align-items:center;justify-content:center;font-size:26px}
-.brand b{font-size:24px;letter-spacing:.5px}
-.brand b span{color:var(--red)}
-.box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:30px}
-.box h1{font-size:22px;margin-bottom:6px}
-.box .sub{color:var(--muted);font-size:13px;margin-bottom:20px}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
-.field input{width:100%;padding:13px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;outline:none}
-.field input:focus{border-color:var(--red)}
-.btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px}
-.btn.ghost{background:transparent;border:1px solid var(--border);margin-top:10px;color:var(--text)}
-.row{display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:13px;color:var(--muted)}
-.row a{color:var(--red);text-decoration:none}
-.alt{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}
-.alt a{color:var(--red);text-decoration:none;font-weight:600}
-.demo{margin-top:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:12px;color:var(--muted);text-align:center}
-.demo b{color:var(--text)}
-.err{color:var(--red);font-size:12px;margin-top:8px;display:none;text-align:center}
+:root{--ink:#07070a;--accent:#ff3b5c;--text:#f4f2ee;--text-dim:#f4f2eeaa;--glass:rgba(255,255,255,0.055);--glass-strong:rgba(255,255,255,0.1);--glass-border:rgba(255,255,255,0.22);--glass-blur:26px;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+body{background:var(--ink);color:var(--text);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;}
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 15% 8%,rgba(255,59,92,0.2),transparent 45%),radial-gradient(circle at 85% 18%,rgba(80,120,255,0.14),transparent 42%),radial-gradient(circle at 30% 90%,rgba(255,150,40,0.12),transparent 40%),var(--ink);}
+.auth-wrap{width:100%;max-width:400px;position:relative;z-index:1;}
+.brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:26px;}
+.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ff7a5c);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 24px rgba(255,59,92,0.4);}
+.brand b{font-size:24px;letter-spacing:.5px;font-weight:800;}
+.brand b span{color:var(--accent);}
+.box{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,0.4),0 2px 8px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.25),inset 0 -8px 16px rgba(0,0,0,0.2);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);}
+.box h1{font-size:22px;margin-bottom:6px;font-weight:800;}
+.box .sub{color:var(--text-dim);font-size:13px;margin-bottom:20px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-weight:600;}
+.field input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--glass-border);background:var(--glass-strong);color:var(--text);font-size:14px;outline:none;}
+.field input:focus{border-color:var(--accent);}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px;box-shadow:0 8px 20px rgba(255,59,92,0.35);}
+.btn.ghost{background:var(--glass);border:1px solid var(--glass-border);margin-top:10px;color:var(--text);box-shadow:none;}
+.row{display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:13px;color:var(--text-dim);}
+.row a{color:var(--accent);text-decoration:none;}
+.alt{text-align:center;color:var(--text-dim);font-size:13px;margin-top:16px;}
+.alt a{color:var(--accent);text-decoration:none;font-weight:600;}
+.demo{margin-top:16px;background:var(--glass-strong);border:1px solid var(--glass-border);border-radius:12px;padding:12px;font-size:12px;color:var(--text-dim);text-align:center;}
+.demo b{color:var(--text);}
+.err{color:var(--accent);font-size:12px;margin-top:8px;display:none;text-align:center;}
 </style>
 </head>
 <body>
+<div class="bg"></div>
 <div class="auth-wrap">
-  <div class="brand">
-    <div class="logo">▶</div>
-    <b>BROKEN <span>Movies</span></b>
-  </div>
+  <div class="brand"><div class="logo">▶</div><b>BROKEN <span>Movies</span></b></div>
   <div class="box" id="loginBox">
     <h1>Welcome back</h1>
     <div class="sub">Sign in to keep watching your favorites</div>
@@ -44,7 +43,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
     <div class="field"><label>Password</label><input id="pass" type="password" placeholder="••••••••"></div>
     <div class="err" id="err">Invalid email or password.</div>
     <button class="btn" onclick="login()">Sign In</button>
-    <div class="row"><label style="display:flex;gap:6px;align-items:center;color:var(--muted)"><input type="checkbox"> Remember me</label><a href="#">Forgot?</a></div>
     <div class="alt">New here? <a href="#" onclick="showSignup()">Create account</a></div>
   </div>
   <div class="box" id="signupBox" style="display:none">
@@ -56,23 +54,22 @@ body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',syste
     <button class="btn" onclick="signup()">Create Account</button>
     <div class="alt">Already have an account? <a href="#" onclick="showLogin()">Sign in</a></div>
   </div>
+  <div class="demo">Demo login: <b>demo@broken.com</b> / <b>broken123</b></div>
 </div>
 <script>
-function setErr(m){ const e=document.getElementById('err'); e.style.display='block'; e.textContent=m; }
+function setErr(m){const e=document.getElementById('err');e.style.display='block';e.textContent=m;}
 function login(){
   const em=document.getElementById('email').value.trim().toLowerCase();
   const p=document.getElementById('pass').value;
-  if(em==='demo@broken.com'&&p==='broken123'){
-    localStorage.setItem('bm_user','demo'); window.location.href='index.html';
-  } else setErr('Invalid email or password.');
+  if(em==='demo@broken.com'&&p==='broken123'){localStorage.setItem('bm_user','demo');window.location.href='index.html';}
+  else setErr('Invalid email or password.');
 }
 function signup(){
   const n=document.getElementById('sname').value.trim();
   const em=document.getElementById('semail').value.trim();
   const p=document.getElementById('spass').value;
-  if(!n||!em||p.length<6) return setErr('Fill all fields (password 6+ chars).');
-  localStorage.setItem('bm_user',n); localStorage.setItem('bm_email',em);
-  window.location.href='index.html';
+  if(!n||!em||p.length<6)return setErr('Fill all fields (password 6+ chars).');
+  localStorage.setItem('bm_user',n);localStorage.setItem('bm_email',em);window.location.href='index.html';
 }
 function showSignup(){document.getElementById('loginBox').style.display='none';document.getElementById('signupBox').style.display='block';document.getElementById('err').style.display='none';}
 function showLogin(){document.getElementById('signupBox').style.display='none';document.getElementById('loginBox').style.display='block';document.getElementById('err').style.display='none';}
