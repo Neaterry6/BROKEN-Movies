@@ -6,6 +6,30 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 let currentTab = "home";
 
+// Reusable inline SVG icon set (no emoji). Each returns an <svg> string.
+const S = (d, vb = "0 0 24 24") =>
+  `<svg viewBox="${vb}" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICON = {
+  play: S('<polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/>'),
+  trailer: S('<rect x="2" y="4" width="20" height="16" rx="3"/><path d="M9 4v16M15 4v16M2 9h7M2 15h7M15 9h7M15 15h7"/>'),
+  eps: S('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5M16 4v5"/>'),
+  like: S('<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>'),
+  share: S('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>'),
+  heart: S('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>'),
+  heartFilled: S('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z" fill="currentColor" stroke="none"/>'),
+  download: S('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'),
+  back: S('<polyline points="15 18 9 12 15 6"/>'),
+  close: S('<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'),
+  cinema: S('<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>'),
+  tv: S('<rect x="2" y="7" width="20" height="13" rx="2"/><polyline points="17 2 12 7 7 2"/>'),
+  globe: S('<circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/>'),
+  mic: S('<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/>'),
+  clock: S('<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/>'),
+  film: S('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/>'),
+  popcorn: S('<path d="M6 10h12l-1.2 10H7.2L6 10z"/><path d="M5 10h14M7 10c0-2 .8-3.5 2.2-3.5.4-1.6 1.6-2.5 3-2.5 1.5 0 2.7 1 3 2.6 1.4 0 2.2 1.5 2.2 3.4"/><path d="M9 14v2M12 14v3M15 14v2"/>'),
+  star: S('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" stroke="none"/>'),
+};
+
 // LOGIN GATE
 if (!localStorage.getItem("bm_user")) { window.location.href = "login.html"; }
 const USER = localStorage.getItem("bm_user") || "user";
@@ -20,7 +44,7 @@ function toggleFav(m) {
   if (isFav(m.id)) MYLIST = MYLIST.filter((x) => x.id !== m.id);
   else MYLIST.unshift({ id: m.id, title: m.title, cover: m.cover, rating: m.rating, year: m.year, typeId: m.typeId, type: m.type, detailPath: m.detailPath, genre: m.genre, description: m.description });
   saveList();
-  toast(isFav(m.id) ? "Added to My List ♥" : "Removed from My List");
+  toast(isFav(m.id) ? "Added to My List" : "Removed from My List");
   if (currentTab === "mylist") go("mylist");
 }
 function recordProgress(id, title, cover, typeId, type, detailPath, se, ep, pct) {
@@ -50,10 +74,10 @@ function card(m) {
   const prog = pct > 0 ? `<div class="progress"><div style="width:${pct}%"></div></div>` : "";
   const onClick = m.adult && m.adultUrl ? `playAdult('${encodeURIComponent(m.adultUrl)}','${esc((m.title || '').replace(/'/g, "\\'"))}')` : `openDetail('${data}')`;
   return `<div class="card" onclick="${onClick}">
-    <button class="fav ${fav}" onclick="event.stopPropagation();toggleFav(${data})">${fav ? "♥" : "♡"}</button>
+    <button class="fav ${fav}" onclick="event.stopPropagation();toggleFav(${data})">${fav ? ICON.heartFilled : ICON.heart}</button>
     <div class="poster">
       <span class="badge ${isSeriesType(m) ? "" : "movie"}">${type}</span>
-      ${img ? `<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="noimg" style="display:none">🎬</div>` : `<div class="noimg">🎬</div>`}
+      ${img ? `<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="noimg" style="display:none">${ICON.film}</div>` : `<div class="noimg">${ICON.film}</div>`}
       ${pct > 0 ? `<div class="progress"><div style="width:${pct}%"></div></div>` : ""}
     </div>
     <div class="name">${esc(m.title || "Untitled")}</div>
@@ -74,7 +98,7 @@ function featured(m) {
       <div class="ftag">${isSeriesType(m) ? "Series" : "Featured"} · ${m.year || ""}</div>
       <div class="fname">${esc(m.title || "")}</div>
       <div class="fgenre">${esc((m.genre || "").slice(0, 60))}</div>
-      <button class="fplay" onclick="openDetail('${data}')">▶ Watch Now</button>
+      <button class="fplay" onclick="openDetail('${data}')">${ICON.play} Watch Now</button>
     </div>
   </div>`;
 }
@@ -114,8 +138,8 @@ let infinite = null; // { loadMore, loading }
 function resetInfinite() { infinite = null; }
 function renderGrid(items, title, sub, loadMore) {
   const c = $("content");
-  if (!items.length) { c.innerHTML = `<div class="empty">Nothing here yet. 🍿</div>`; return; }
-  c.innerHTML = `${title ? `<div class="page-title">${esc(title)}</div>` : ""}${sub ? `<div class="page-sub">${esc(sub)}</div>` : ""}<div class="grid" id="gridWrap">${items.map(card).join("")}</div>${loadMore ? `<div class="load-more"><div class="loader-logo" style="width:40px;height:40px"><div class="ring"></div><div class="badge"><span class="l-emoji" style="font-size:13px">🍿</span></div></div></div>` : ""}`;
+  if (!items.length) { c.innerHTML = `<div class="empty">${ICON.popcorn}<span>Nothing here yet.</span></div>`; return; }
+  c.innerHTML = `${title ? `<div class="page-title">${esc(title)}</div>` : ""}${sub ? `<div class="page-sub">${esc(sub)}</div>` : ""}<div class="grid" id="gridWrap">${items.map(card).join("")}</div>${loadMore ? `<div class="load-more"><div class="loader-logo" style="width:40px;height:40px"><div class="ring"></div><div class="badge" style="width:22px;height:22px">${ICON.popcorn}</div></div></div>` : ""}`;
   infinite = loadMore ? { loadMore, loading: false } : null;
 }
 function appendGridItems(newItems) {
@@ -260,7 +284,7 @@ async function go(tab) {
       const d = await api('/tv-channels?limit=60');
       renderLive(d.channels || d.results || []);
     } else if (tab === "mylist") {
-      renderGrid(MYLIST, "My List ♥", "Your saved titles");
+      renderGrid(MYLIST, "My List", "Your saved titles");
     } else if (tab === "trending") {
       const d = await api('/movie/home/trending?limit=100');
       renderGrid(d.movies || [], "Trending");
@@ -401,7 +425,7 @@ function renderLive(channels) {
   if (!channels.length) { c.innerHTML = '<div class="empty">No channels available.</div>'; return; }
   c.innerHTML = `<div class="page-title">Live TV</div><div class="page-sub">Real working channels</div><div class="live-grid">${channels.map((ch) => `
     <div class="live-card" onclick="openLive('${esc(ch.url || ch.streamUrl || "")}','${esc(ch.name || "Channel")}')">
-      <div class="thumb"><span class="live-dot"></span><span style="font-size:22px">📺</span></div>
+      <div class="thumb"><span class="live-dot"></span>${ICON.tv}</div>
       <div class="lname">${esc(ch.name || "Channel")}</div>
     </div>`).join("")}</div>`;
 }
@@ -470,25 +494,25 @@ async function openDetail(jsonStr) {
     }
     const img = m.cover || m.image || "";
     const genreList = (Array.isArray(m.genres) ? m.genres : (m.genre ? [m.genre] : [])).join(" · ");
-    const dubsStr = dubs.length ? `<span>🎙 ${esc(dubs.slice(0, 3).join(" / "))}</span>` : "";
+    const dubsStr = dubs.length ? `<span>${ICON.mic} ${esc(dubs.slice(0, 3).join(" / "))}</span>` : "";
     detail.innerHTML = `
       <div class="dhero">
         ${img ? `<img src="${img}" onerror="this.style.display='none'">` : ""}
         <div class="scrim"></div>
-        <button class="dback" onclick="$('detail').style.display='none'">←</button>
+        <button class="dback" onclick="$('detail').style.display='none'">${ICON.back}</button>
       </div>
       <div class="dinfo">
         <div class="dtag">${isSeries ? "Series" : "Movie"}</div>
         <h1 class="dtitle">${esc(m.title || "")}</h1>
-        <div class="dmeta"><span class="rating">★ ${m.rating || "—"}</span>${m.year ? `<span>${m.year}</span>` : ""}${m.country ? `<span>🌍 ${esc(m.country)}</span>` : ""}${m.languages ? `<span>${esc(String(m.languages).slice(0, 20))}</span>` : ""}${genreList ? `<span>${esc(genreList)}</span>` : ""}${duration ? `<span>⏱ ${esc(fmtDur(duration))}</span>` : ""}${dubsStr}</div>
+        <div class="dmeta"><span class="rating">${ICON.star} ${m.rating || "—"}</span>${m.year ? `<span>${m.year}</span>` : ""}${m.country ? `<span>${ICON.globe} ${esc(m.country)}</span>` : ""}${m.languages ? `<span>${esc(String(m.languages).slice(0, 20))}</span>` : ""}${genreList ? `<span>${esc(genreList)}</span>` : ""}${duration ? `<span>${ICON.clock} ${esc(fmtDur(duration))}</span>` : ""}${dubsStr}</div>
         <div class="dbtns">
-          <button class="btn btn-play" onclick="playDetail()">▶ Play</button>
-          ${trailer ? `<button class="btn btn-ghost" onclick="playTrailerUrl('${encodeURIComponent(trailer)}','${esc((m.title || '').replace(/'/g, "\\'"))}')">▶ Trailer</button>` : ""}
-          ${isSeries ? `<button class="btn btn-ghost" onclick="toggleEpPicker()">🎬 Episodes</button>` : ""}
-          <button class="btn btn-dl" onclick="likeDetail()">👍</button>
-          <button class="btn btn-dl" onclick="shareDetail()">↗</button>
-          <button class="btn btn-dl ${isFav(m.id) ? 'on' : ''}" onclick="toggleFavDetail()">${isFav(m.id) ? "♥" : "♡"}</button>
-          <button class="btn btn-dl" onclick="downloadDetail()">⬇</button>
+          <button class="btn btn-play" onclick="playDetail()">${ICON.play} Play</button>
+          ${trailer ? `<button class="btn btn-ghost" onclick="playTrailerUrl('${encodeURIComponent(trailer)}','${esc((m.title || '').replace(/'/g, "\\'"))}')">${ICON.trailer} Trailer</button>` : ""}
+          ${isSeries ? `<button class="btn btn-ghost" onclick="toggleEpPicker()">${ICON.eps} Episodes</button>` : ""}
+          <button class="btn btn-dl" onclick="likeDetail()">${ICON.like}</button>
+          <button class="btn btn-dl" onclick="shareDetail()">${ICON.share}</button>
+          <button class="btn btn-dl ${isFav(m.id) ? 'on' : ''}" onclick="toggleFavDetail()">${isFav(m.id) ? ICON.heartFilled : ICON.heart}</button>
+          <button class="btn btn-dl" onclick="downloadDetail()">${ICON.download}</button>
         </div>
         ${isSeries ? `<div id="epPicker" class="open">${epPickerHtml(m)}</div>` : ""}
         <div class="quality-row" id="qualityRow" style="display:none"></div>
@@ -506,7 +530,7 @@ let likedSet = new Set(JSON.parse(localStorage.getItem("bm_liked") || "[]"));
 function likeDetail() {
   const m = window._cur; if (!m) return;
   if (likedSet.has(m.id)) { likedSet.delete(m.id); toast("Unliked"); }
-  else { likedSet.add(m.id); toast("Liked 👍"); }
+  else { likedSet.add(m.id); toast("Liked"); }
   localStorage.setItem("bm_liked", JSON.stringify([...likedSet]));
 }
 function shareDetail() {
@@ -559,7 +583,7 @@ function epPickerHtml(m) {
   return `<div class="dsec-label">Episodes</div>${seasonPills}<div class="ep-grid">${eps.map((n) => {
     return `<div class="ep-item">
       <button class="ep-btn" onclick="playEp('${m.detailPath || ""}','${m.id}','${se}','${n}',this)">EP ${n}</button>
-      <button class="ep-dl" onclick="downloadEp('${m.detailPath || ""}','${m.id}','${se}','${n}','${esc(m.title || "").replace(/'/g, "\\'")}')">⬇</button>
+      <button class="ep-dl" onclick="downloadEp('${m.detailPath || ""}','${m.id}','${se}','${n}','${esc(m.title || "").replace(/'/g, "\\'")}')">${ICON.download}</button>
     </div>`;
   }).join("")}</div>`;
 }
@@ -589,12 +613,12 @@ async function downloadEp(detailPath, id, se, ep, title) {
 function openDownloadPicker(dl, captions, title, se, ep) {
   let html = `<div class="dl-panel glass">
     <div class="dl-head"><div><div class="dl-title">Download${se ? " · S" + se + "E" + ep : ""}</div><div class="dl-sub">${esc(title || "")}</div></div>
-      <button class="dl-close" onclick="closeDownloadPicker()">✕</button></div>
+      <button class="dl-close" onclick="closeDownloadPicker()">${ICON.close}</button></div>
     <div class="dl-list">${dl.map((x, i) => `
       <button class="dl-row" onclick="doDownload('${esc(x.url)}','${esc(title || "movie")}')">
         <span class="dl-badge">${x.resolution ? x.resolution + "p" : (x.format || "MP4")}</span>
         <span class="dl-size">${x.size || "direct"}</span>
-        <span class="dl-arrow">⬇</span>
+        <span class="dl-arrow">${ICON.download}</span>
       </button>`).join("")}</div>
     ${captions.length ? `<div class="dl-subs">${captions.length} subtitle track${captions.length > 1 ? "s" : ""} included</div>` : ""}
   </div>`;
@@ -615,7 +639,7 @@ function toggleFavDetail() {
   const m = window._cur;
   if (!m) return;
   toggleFav(m);
-  const fav = isFav(m.id) ? "♥ Remove" : "♡ Save";
+  const fav = isFav(m.id) ? "Remove" : "Save";
   const b = document.querySelector(".btn-dl"); if (b) b.textContent = fav;
 }
 
@@ -731,7 +755,7 @@ function growMini() {
   $("miniBar").style.display = "none";
   p.querySelector(".mini-x")?.remove();
   const x = document.createElement("button");
-  x.className = "mini-x"; x.innerHTML = "✕"; x.onclick = (e) => { e.stopPropagation(); closePlayer(true); };
+  x.className = "mini-x"; x.innerHTML = ICON.close; x.onclick = (e) => { e.stopPropagation(); closePlayer(true); };
   p.appendChild(x);
 }
 function toggleCinema() {
@@ -770,19 +794,19 @@ function openProfile() {
   m.style.display = "block";
   m.innerHTML = `
     <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:var(--ink)">
-      <button class="dback" style="position:fixed;top:14px;left:14px" onclick="$('detail').style.display='none'">←</button>
+      <button class="dback" style="position:fixed;top:14px;left:14px" onclick="$('detail').style.display='none'">${ICON.back}</button>
       <div style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#ff7a5c);display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:16px;font-weight:800">${esc((USER[0] || "U").toUpperCase())}</div>
       <h2 style="font-size:22px;margin:0 0 4px">${esc(USER)}</h2>
       <p style="color:var(--text-dim);font-size:13px;margin:0 0 24px">${esc(localStorage.getItem("bm_email") || "movies@broken.com")}</p>
-      <button class="btn btn-play" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';go('mylist')">♥ My List (${MYLIST.length})</button>
-      <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';showHistory()">🕒 Watch History (${HISTORY.length})</button>
-      <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';go('live')">📺 Live TV</button>
+      <button class="btn btn-play" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';go('mylist')">${ICON.heartFilled} My List (${MYLIST.length})</button>
+      <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';showHistory()">${ICON.clock} Watch History (${HISTORY.length})</button>
+      <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';go('live')">${ICON.tv} Live TV</button>
       <button class="btn btn-ghost" style="width:100%;max-width:300px;color:var(--accent)" onclick="logout()">Log Out</button>
     </div>`;
 }
 function showHistory() {
-  if (!HISTORY.length) { $("content").innerHTML = '<div class="empty">No watch history yet. 🍿</div>'; setActive("home"); return; }
-  renderGrid(HISTORY.slice().sort((a, b) => b.lastWatched - a.lastWatched), "🕒 Watch History");
+  if (!HISTORY.length) { $("content").innerHTML = `<div class="empty">${ICON.popcorn}<span>No watch history yet.</span></div>`; setActive("home"); return; }
+  renderGrid(HISTORY.slice().sort((a, b) => b.lastWatched - a.lastWatched), "Watch History");
 }
 function logout() { localStorage.removeItem("bm_user"); localStorage.removeItem("bm_email"); window.location.href = "login.html"; }
 function toast(msg) { const t = $("toast"); t.textContent = msg; t.style.display = "block"; setTimeout(() => (t.style.display = "none"), 2500); }
