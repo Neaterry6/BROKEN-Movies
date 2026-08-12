@@ -127,7 +127,41 @@ function setCatPills(pills, active, fn) {
 function setActive(tab) {
   currentTab = tab;
   document.querySelectorAll("#tabbar .tab").forEach((t) => t.classList.toggle("active", t.dataset.tab === tab));
+  document.querySelectorAll("#drawer .drawer-item[data-gotab]").forEach((d) => d.classList.toggle("active", d.dataset.gotab === tab));
 }
+
+// ===== Drawer (swipe-from-left) =====
+function openDrawer() {
+  const av = $("drawerAvatar"), nm = $("drawerName"), em = $("drawerEmail");
+  av.textContent = (USER[0] || "U").toUpperCase();
+  nm.textContent = USER;
+  em.textContent = localStorage.getItem("bm_email") || "movies@broken.com";
+  $("drawer").classList.add("open");
+  $("drawerScrim").classList.add("open");
+}
+function closeDrawer() { $("drawer").classList.remove("open"); $("drawerScrim").classList.remove("open"); }
+function drawerGo(tab) {
+  closeDrawer();
+  setActive(tab);
+  go(tab);
+}
+// Swipe-from-left to open drawer
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener("touchstart", (e) => {
+  const t = e.touches[0];
+  touchStartX = t.clientX; touchStartY = t.clientY;
+}, { passive: true });
+document.addEventListener("touchend", (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  const player = $("moviePlayer");
+  const isOpenPlayer = player && (player.style.display === "flex" || playerMode !== "full");
+  if (isOpenPlayer) return;
+  // swipe right from left edge
+  if (touchStartX < 28 && dx > 60 && Math.abs(dy) < 80) openDrawer();
+  // swipe left to close
+  if (dx < -60 && Math.abs(dy) < 80 && $("drawer").classList.contains("open")) closeDrawer();
+}, { passive: true });
 
 async function go(tab) {
   setActive(tab);
@@ -153,13 +187,21 @@ async function go(tab) {
       renderGrid(d.movies || d.results || [], "Movies", "All movies");
     } else if (tab === "anime") {
       const d = await fetchJSON(`${API}/anime/top?limit=80`);
-      renderGrid(d.anime || d.results || [], "Anime", "Top anime");
+      renderGrid(d.anime || d.results || d.movies || [], "Anime", "Top anime");
     } else if (tab === "nollywood") {
       const d = await fetchJSON(`${API}/nollywood`);
-      renderGrid(d.movies || d.results || [], "Nollywood", "Nigerian films");
+      renderGrid(d.movies || d.results || d.series || [], "Nollywood", "Nigerian films");
     } else if (tab === "kdrama") {
       const d = await fetchJSON(`${API}/kdrama`);
-      renderGrid(d.dramas || d.results || d.movies || [], "K-Drama", "Korean dramas");
+      renderGrid(d.series || d.dramas || d.results || d.movies || [], "K-Drama", "Korean dramas");
+    } else if (tab === "hollywood") {
+      const d = await fetchJSON(`${API}/movie/home/trending?limit=100`);
+      renderGrid(d.movies || d.results || [], "Hollywood", "Top films");
+    } else if (tab === "bl") {
+      const d = await fetchJSON(`${API}/bl?limit=80`);
+      renderGrid(d.series || d.movies || d.results || [], "BL Series", "Boys Love");
+    } else if (tab === "history") {
+      showHistory();
     } else if (tab === "live") {
       const d = await fetchJSON(`${API}/tv-channels?limit=60`);
       renderLive(d.channels || d.results || []);
