@@ -55,6 +55,18 @@ async function poolSearch(pool, type, limit = 40, page = 1) {
     const key = it.subjectId || (it.title || "").toLowerCase().trim();
     if (key && !seen.has(key)) { seen.add(key); out.push(it); }
   }
+  // Fallback: if OmniSave came back empty (rate-limited/blocked), pull from FZMovies
+  // (independent source) so the app never shows an empty page.
+  if (!out.length) {
+    try {
+      const fzm = require("./fzmovies");
+      const q = (keywords[0] || "hollywood").replace(/\s+/g, " ");
+      const fz = await fzm.search(q, Math.min(limit, 24));
+      for (const it of (fz.results || [])) {
+        out.push({ id: "fz_" + (it.url || "").split("/").pop(), title: it.title, cover: it.poster || "", detailPath: it.url, type: "movie", typeId: 1, fzmovies: true });
+      }
+    } catch {}
+  }
   return out.slice(0, limit);
 }
 
