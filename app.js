@@ -286,11 +286,12 @@ async function go(tab) {
     } else if (tab === "mylist") {
       renderGrid(MYLIST, "My List", "Your saved titles");
     } else if (tab === "trending") {
-      const d = await api('/movie/home/trending?limit=100');
-      renderGrid(d.movies || [], "Trending");
+      let items = (await api('/movie/home/trending?limit=100')).movies || [];
+      if (!items.length) items = await loadFallbackMovies();
+      renderGrid(items, "Trending", "Popular right now", () => loadMoreMovies());
     } else if (tab === "genres" || GENRE_VIEWS[tab]) {
       setCatPills(["Action", "Comedy", "Horror", "Romance", "Sci-Fi", "Drama", "Animation", "Documentary"], null, "genre");
-      if (tab === "genres") { const d = await api('/movie/home/trending?limit=80'); renderGrid(d.movies || [], "Genres", "Pick a genre"); }
+      if (tab === "genres") { let items = (await api('/movie/home/trending?limit=80')).movies || []; if (!items.length) items = await loadFallbackMovies(); renderGrid(items, "Genres", "Pick a genre", () => loadMoreMovies()); }
       else genre(tab);
     }
   } catch (e) {
@@ -301,12 +302,23 @@ const GENRE_VIEWS = { action: 1, comedy: 1, horror: 1, romance: 1, scifi: 1, dra
 
 async function genre(g) {
   showLoading();
+  resetInfinite();
   setCatPills(["Action", "Comedy", "Horror", "Romance", "Sci-Fi", "Drama", "Animation", "Documentary"], g, "genre");
   try {
     const slug = g.toLowerCase().replace("sci-fi", "scifi");
-    const d = await api(`/movie/genre/${slug}?limit=80`);
-    renderGrid(d.movies || d.results || [], "Genre · " + g);
+    let items = (await api(`/movie/genre/${slug}?limit=80`)).movies || [];
+    if (!items.length) items = await loadFallbackMovies();
+    renderGrid(items, "Genre · " + g, "", () => loadMoreGenre(slug));
   } catch (e) { $("content").innerHTML = `<div class="empty">Genre failed: ${esc(e.message)}</div>`; }
+}
+async function loadMoreGenre(slug) {
+  try {
+    const d = await api(`/movie/genre/${slug}?limit=80`);
+    let items = d.movies || d.results || [];
+    if (!items.length) items = await loadFallbackMovies();
+    if (!appendGridItems(items)) { infinite = null; return; }
+  } catch { infinite = null; }
+  if (infinite) infinite.loading = false;
 }
 
 // ===== 18+ Adult section =====
