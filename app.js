@@ -108,11 +108,37 @@ function renderHome(sections, heroItems) {
   // No auto-playing hero banner on top — straight to the content rows.
   $("content").innerHTML = sections.map((s) => row(s.title, s.items, s.more)).join("");
 }
-function renderGrid(items, title, sub) {
+// Infinite-scroll state
+let infinite = null; // { loadMore, loading }
+function resetInfinite() { infinite = null; }
+function renderGrid(items, title, sub, loadMore) {
   const c = $("content");
   if (!items.length) { c.innerHTML = `<div class="empty">Nothing here yet. 🍿</div>`; return; }
-  c.innerHTML = `${title ? `<div class="page-title">${esc(title)}</div>` : ""}${sub ? `<div class="page-sub">${esc(sub)}</div>` : ""}<div class="grid">${items.map(card).join("")}</div>`;
+  c.innerHTML = `${title ? `<div class="page-title">${esc(title)}</div>` : ""}${sub ? `<div class="page-sub">${esc(sub)}</div>` : ""}<div class="grid" id="gridWrap">${items.map(card).join("")}</div>${loadMore ? `<div class="load-more"><div class="loader-logo" style="width:40px;height:40px"><div class="ring"></div><div class="badge"><span class="l-emoji" style="font-size:13px">🍿</span></div></div></div>` : ""}`;
+  infinite = loadMore ? { loadMore, loading: false } : null;
 }
+function appendGridItems(newItems) {
+  if (!newItems || !newItems.length) return false;
+  const g = $("gridWrap");
+  if (!g) return false;
+  g.insertAdjacentHTML("beforeend", newItems.map(card).join(""));
+  return true;
+}
+// Scroll near bottom -> load more
+let scrollTicking = false;
+$("app").addEventListener("scroll", () => {
+  if (scrollTicking) return;
+  scrollTicking = true;
+  requestAnimationFrame(() => {
+    scrollTicking = false;
+    const el = $("app");
+    if (!infinite || infinite.loading) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 600) {
+      infinite.loading = true;
+      infinite.loadMore();
+    }
+  });
+}, { passive: true });
 
 function showLoading() { $("content").innerHTML = '<div class="loading"><div class="loader-logo"><div class="ring"></div><div class="badge"><span class="l-emoji">🍿🎥</span><span class="l-txt">BROKEN <span>MOVIES</span></span></div></div><div class="loader-text"><span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span></div></div>'; }
 // Resilient fetch: try local backend first, then remote, with a retry.
@@ -189,6 +215,7 @@ document.body.appendChild(edgeHandle);
 async function go(tab) {
   setActive(tab);
   clearInterval(heroTimer);
+  resetInfinite();
   $("searchWrap").classList.remove("open");
   $("epPicker").classList.remove("open");
   $("detail").style.display = "none";
@@ -206,23 +233,24 @@ async function go(tab) {
       if (s.actionMovies) sections.push({ title: "Action", items: s.actionMovies, more: "go('action')" });
       renderHome(sections, all);
     } else if (tab === "movies") {
-      const d = await api('/movie/home/trending?limit=100');
-      renderGrid(d.movies || d.results || [], "Movies", "All movies");
+      let items = (await api('/movie/home/trending?limit=100')).movies || [];
+      if (!items.length) items = await loadFallbackMovies();
+      renderGrid(items, "Movies", "All movies", () => loadMoreMovies());
     } else if (tab === "anime") {
       const d = await api('/anime/top?limit=80');
-      renderGrid(d.anime || d.results || d.movies || [], "Anime", "Top anime");
+      renderGrid(d.anime || d.results || d.movies || [], "Anime", "Top anime", () => loadMoreAnime());
     } else if (tab === "nollywood") {
-      const d = await api('/nollywood');
-      renderGrid(d.movies || d.results || d.series || [], "Nollywood", "Nigerian films");
+      const d = await api('/nollywood?limit=60');
+      renderGrid(d.movies || d.results || d.series || [], "Nollywood", "Nigerian films", () => loadMoreNollywood());
     } else if (tab === "kdrama") {
-      const d = await api('/kdrama');
-      renderGrid(d.series || d.dramas || d.results || d.movies || [], "K-Drama", "Korean dramas");
+      const d = await api('/kdrama?limit=60');
+      renderGrid(d.series || d.dramas || d.results || d.movies || [], "K-Drama", "Korean dramas", () => loadMoreKdrama());
     } else if (tab === "hollywood") {
       const d = await api('/movie/home/trending?limit=100');
-      renderGrid(d.movies || d.results || [], "Hollywood", "Top films");
+      renderGrid(d.movies || d.results || [], "Hollywood", "Top films", () => loadMoreMovies());
     } else if (tab === "bl") {
-      const d = await api('/bl?limit=80');
-      renderGrid(d.series || d.movies || d.results || [], "BL Series", "Boys Love");
+      const d = await api('/bl?limit=60');
+      renderGrid(d.series || d.movies || d.results || [], "BL Series", "Boys Love", () => loadMoreBl());
     } else if (tab === "history") {
       showHistory();
     } else if (tab === "live") {
@@ -253,6 +281,54 @@ async function genre(g) {
     renderGrid(d.movies || d.results || [], "Genre · " + g);
   } catch (e) { $("content").innerHTML = `<div class="empty">Genre failed: ${esc(e.message)}</div>`; }
 }
+
+// ===== Infinite-scroll "load more" helpers =====
+const MOREPOOLS = ["action", "comedy", "horror", "romance", "scifi", "drama", "animation", "documentary"];
+const ANIMEPOOLS = ["action", "romance", "fantasy", "comedy", "horror", "scifi", "drama"];
+const NPOOLS = ["nollywood", "nigerian movie", "nigerian film", "yoruba movie", "hausa movie"];
+const KPOOLS = ["korean drama", "kdrama", "korean series", "korean movie"];
+const BPOOLS = ["BL series", "boys love", "BL drama", "thai bl", "korean bl"];
+
+// Gather a solid first batch of movies across pools (robust when one endpoint is flaky).
+async function loadFallbackMovies() {
+  const out = [];
+  const seen = new Set();
+  for (const pool of MOREPOOLS) {
+    try {
+      const d = await api(`/movie/genre/${pool}?limit=40`);
+      const items = d.movies || d.results || d.series || d.anime || [];
+      for (const it of items) { const k = it.subjectId || it.title || it.id; if (k && !seen.has(k)) { seen.add(k); out.push(it); } }
+    } catch {}
+    if (out.length >= 60) break;
+  }
+  // Last-resort: FZMovies (independent source, not rate-limited the same way).
+  if (!out.length) {
+    try {
+      const fz = await api(`/fzmovies/search?q=hollywood&limit=30`);
+      for (const it of (fz.results || [])) out.push({ id: "fz_" + (it.url||"").split("/").pop(), title: it.title, cover: it.poster || "", detailPath: it.url, type: "movie", typeId: 1, fzmovies: true });
+    } catch {}
+  }
+  return out.slice(0, 100);
+}
+
+function makeLoadMore(pools) {
+  let idx = 0;
+  return async function loadMore() {
+    try {
+      const pool = pools[idx % pools.length]; idx++;
+      let d = await api(`/movie/genre/${pool}?limit=80`);
+      let items = d.movies || d.results || d.series || d.anime || [];
+      if (!items.length) items = (await api(`/search?q=${encodeURIComponent(pool)}&per_page=60`)).results || [];
+      if (!appendGridItems(items)) { infinite = null; return; }
+    } catch { infinite = null; }
+    if (infinite) infinite.loading = false;
+  };
+}
+const loadMoreMovies = makeLoadMore(MOREPOOLS);
+const loadMoreAnime = makeLoadMore(ANIMEPOOLS);
+const loadMoreNollywood = makeLoadMore(NPOOLS);
+const loadMoreKdrama = makeLoadMore(KPOOLS);
+const loadMoreBl = makeLoadMore(BPOOLS);
 
 function renderLive(channels) {
   const c = $("content");
