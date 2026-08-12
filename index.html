@@ -186,6 +186,7 @@
   .btn-play{background:var(--accent);color:#fff;flex:1;justify-content:center;box-shadow:0 8px 20px rgba(255,59,92,0.35);}
   .btn-ghost{background:var(--glass);color:var(--text);border:1px solid var(--glass-border);}
   .btn-dl{background:var(--glass-strong);color:var(--text);border:1px solid var(--glass-border);}
+  .btn-dl.on{background:rgba(255,59,92,0.18);color:var(--accent);border-color:rgba(255,59,92,0.4);}
   .btn.on{color:var(--accent);}
   .dsec-label{font-size:14px;font-weight:800;margin:4px 0 10px;}
   .quality-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none;}
@@ -231,8 +232,11 @@
   #epPicker{display:none;margin:0 16px 16px;}
   #epPicker.open{display:block;}
   .ep-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-  .ep-btn{padding:10px 6px;border-radius:10px;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;text-align:center;}
+  .ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;}
+  .ep-item{display:flex;gap:6px;align-items:stretch;}
+  .ep-btn{flex:1;padding:10px 4px;border-radius:10px;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;text-align:center;}
   .ep-btn.active{background:rgba(255,59,92,0.2);border-color:var(--accent);}
+  .ep-dl{flex:0 0 34px;border-radius:10px;background:var(--glass-strong);border:1px solid var(--glass-border);color:var(--text);cursor:pointer;font-size:14px;}
 
   /* ===== Live TV ===== */
   .live-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 16px 20px;}
@@ -282,6 +286,7 @@
   .drawer-item.active{color:var(--accent);background:rgba(255,59,92,0.1);}
   .drawer-item svg{width:22px;height:22px;flex-shrink:0;}
   .drawer-item span{margin-top:2px;}
+  #edgeHandle{position:fixed;top:0;left:0;bottom:0;width:6px;z-index:8;cursor:pointer;}
 </style>
 </head>
 <body>

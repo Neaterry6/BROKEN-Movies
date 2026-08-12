@@ -31,6 +31,13 @@ function recordProgress(id, title, cover, typeId, type, detailPath, se, ep, pct)
 }
 
 const isSeriesType = (m) => (m.typeId === 2 || m.typeId === 3 || m.type === "tv" || m.type === "series" || m.type === "anime");
+function fmtDur(d) {
+  if (!d) return "";
+  const n = parseInt(d, 10);
+  if (isNaN(n)) return String(d);
+  if (n > 1000) return Math.round(n / 60) + "m"; // seconds -> minutes
+  return n + "m";
+}
 
 // ===== Cards =====
 function card(m) {
@@ -167,11 +174,17 @@ document.addEventListener("touchend", (e) => {
   const player = $("moviePlayer");
   const isOpenPlayer = player && (player.style.display === "flex" || playerMode !== "full");
   if (isOpenPlayer) return;
-  // swipe right from left edge
-  if (touchStartX < 28 && dx > 60 && Math.abs(dy) < 80) openDrawer();
-  // swipe left to close
-  if (dx < -60 && Math.abs(dy) < 80 && $("drawer").classList.contains("open")) closeDrawer();
+  const drawerOpen = $("drawer").classList.contains("open");
+  // Swipe RIGHT anywhere opens the sidebar; swipe LEFT closes it.
+  if (!drawerOpen && dx > 70 && Math.abs(dy) < 110) openDrawer();
+  if (drawerOpen && dx < -40 && Math.abs(dy) < 110) closeDrawer();
 }, { passive: true });
+
+// Tiny left-edge grab handle so the swipe target is discoverable.
+const edgeHandle = document.createElement("div");
+edgeHandle.id = "edgeHandle";
+edgeHandle.onclick = openDrawer;
+document.body.appendChild(edgeHandle);
 
 async function go(tab) {
   setActive(tab);
@@ -284,12 +297,24 @@ async function openDetail(jsonStr) {
   detail.style.display = "block";
   detail.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
   const isSeries = isSeriesType(m);
-  const fav = isFav(m.id) ? "♥ Remove" : "♡ Save";
+  let trailer = null, extraDesc = "", duration = "", dubs = [], similar = [], seasons = [];
   try {
     if (m.detailPath) {
-      try { const d = await api(`/detail?path=${encodeURIComponent(m.detailPath)}`); if (d.subject) Object.assign(m, d.subject); } catch {}
+      try {
+        const d = await api(`/detail?path=${encodeURIComponent(m.detailPath)}`);
+        if (d.subject) Object.assign(m, d.subject);
+        trailer = d.trailer || null;
+        extraDesc = d.description || m.description || "";
+        duration = d.duration || m.duration || "";
+        dubs = d.dubs || [];
+        seasons = d.seasons || [];
+        m.seasons = seasons;
+        if (m.genres && m.genres.length) { try { const rel = await api(`/search?q=${encodeURIComponent(m.genres[0])}&per_page=12`); similar = (rel.results || []).filter((x) => x.subjectId !== m.id).slice(0, 8); } catch {} }
+      } catch {}
     }
     const img = m.cover || m.image || "";
+    const genreList = (Array.isArray(m.genres) ? m.genres : (m.genre ? [m.genre] : [])).join(" · ");
+    const dubsStr = dubs.length ? `<span>🎙 ${esc(dubs.slice(0, 3).join(" / "))}</span>` : "";
     detail.innerHTML = `
       <div class="dhero">
         ${img ? `<img src="${img}" onerror="this.style.display='none'">` : ""}
@@ -297,29 +322,99 @@ async function openDetail(jsonStr) {
         <button class="dback" onclick="$('detail').style.display='none'">←</button>
       </div>
       <div class="dinfo">
-        <div class="dtag">${isSeries ? "Series" : "Movie"}${m.year ? " · " + m.year : ""}</div>
+        <div class="dtag">${isSeries ? "Series" : "Movie"}</div>
         <h1 class="dtitle">${esc(m.title || "")}</h1>
-        <div class="dmeta"><span class="rating">★ ${m.rating || "—"}</span>${m.genre ? `<span>${esc(m.genre)}</span>` : ""}</div>
-        <div class="dsynopsis">${esc(m.description || m.synopsis || "")}</div>
+        <div class="dmeta"><span class="rating">★ ${m.rating || "—"}</span>${m.year ? `<span>${m.year}</span>` : ""}${m.country ? `<span>🌍 ${esc(m.country)}</span>` : ""}${m.languages ? `<span>${esc(String(m.languages).slice(0, 20))}</span>` : ""}${genreList ? `<span>${esc(genreList)}</span>` : ""}${duration ? `<span>⏱ ${esc(fmtDur(duration))}</span>` : ""}${dubsStr}</div>
         <div class="dbtns">
           <button class="btn btn-play" onclick="playDetail()">▶ Play</button>
+          ${trailer ? `<button class="btn btn-ghost" onclick="playTrailerUrl('${encodeURIComponent(trailer)}','${esc((m.title || '').replace(/'/g, "\\'"))}')">▶ Trailer</button>` : ""}
           ${isSeries ? `<button class="btn btn-ghost" onclick="toggleEpPicker()">🎬 Episodes</button>` : ""}
-          <button class="btn btn-dl ${fav.includes('Remove') ? 'on' : ''}" onclick="toggleFavDetail()">${fav}</button>
+          <button class="btn btn-dl" onclick="likeDetail()">👍</button>
+          <button class="btn btn-dl" onclick="shareDetail()">↗</button>
+          <button class="btn btn-dl ${isFav(m.id) ? 'on' : ''}" onclick="toggleFavDetail()">${isFav(m.id) ? "♥" : "♡"}</button>
+          <button class="btn btn-dl" onclick="downloadDetail()">⬇</button>
         </div>
         ${isSeries ? `<div id="epPicker" class="open">${epPickerHtml(m)}</div>` : ""}
         <div class="quality-row" id="qualityRow" style="display:none"></div>
+        <div class="dsec-label">Overview</div>
+        <div class="dsynopsis">${esc(extraDesc || m.description || m.synopsis || "No description available.")}</div>
+        ${similar.length ? `<div class="dsec-label">Similar Titles</div><div class="row">${similar.map(card).join("")}</div>` : ""}
       </div>`;
     window._cur = m;
     window._isSeries = isSeries;
   } catch (e) { detail.innerHTML = `<div class="empty">Detail error: ${esc(e.message)}</div>`; }
 }
 
+// Detail action buttons
+let likedSet = new Set(JSON.parse(localStorage.getItem("bm_liked") || "[]"));
+function likeDetail() {
+  const m = window._cur; if (!m) return;
+  if (likedSet.has(m.id)) { likedSet.delete(m.id); toast("Unliked"); }
+  else { likedSet.add(m.id); toast("Liked 👍"); }
+  localStorage.setItem("bm_liked", JSON.stringify([...likedSet]));
+}
+function shareDetail() {
+  const m = window._cur; if (!m) return;
+  const data = { title: m.title || "BROKEN Movies", text: "Watch " + (m.title || "") + " on BROKEN Movies", url: location.href };
+  if (navigator.share) navigator.share(data).catch(() => {});
+  else { navigator.clipboard && navigator.clipboard.writeText(data.url); toast("Link copied"); }
+}
+function downloadDetail() {
+  const m = window._cur; if (!m) return;
+  playDetail(); // open stream; download links appear in quality row / player
+}
+function playTrailerUrl(encUrl, title) {
+  openPlayer(title + " — Trailer");
+  const vw = $("videoWrap"); vw.innerHTML = '<video id="video" controls playsinline autoplay></video>';
+  const v = $("video");
+  const src = decodeURIComponent(encUrl);
+  if (/m3u8/i.test(src) && window.Hls && Hls.isSupported()) { const h = new Hls(); h.loadSource(src); h.attachMedia(v); }
+  else v.src = src;
+  v.play().catch(() => {});
+}
+
 function epPickerHtml(m) {
-  const eps = (m.episodes && m.episodes.length) ? m.episodes : Array.from({ length: (m.totalEpisodes || 12) }, (_, i) => i + 1);
-  return `<div class="dsec-label">Episodes</div><div class="ep-grid">${eps.map((e, i) => {
-    const n = typeof e === "object" ? (e.episode || e.number || i + 1) : e;
-    return `<button class="ep-btn${i === 0 ? " active" : ""}" onclick="playEp('${m.detailPath || ""}','${m.id}','${n}',this)">EP ${n}</button>`;
+  // Build from real season data if available, else fall back to a sensible guess.
+  const seasons = (m.seasons && m.seasons.length) ? m.seasons : [{ season: 1, maxEpisode: m.totalEpisodes || 12 }];
+  const se = m._curSe || seasons[0].season;
+  const curSeason = seasons.find((s) => s.season === se) || seasons[0];
+  const count = curSeason ? (curSeason.maxEpisode || 12) : 12;
+  const eps = Array.from({ length: Math.min(count, 40) }, (_, i) => i + 1);
+  const seasonPills = seasons.length > 1
+    ? `<div class="quality-row" style="display:flex">${seasons.map((s) => `<button class="q-btn${s.season === se ? " active" : ""}" onclick="switchSeason(${s.season},this)">S${s.season}</button>`).join("")}</div>`
+    : "";
+  return `<div class="dsec-label">Episodes</div>${seasonPills}<div class="ep-grid">${eps.map((n) => {
+    return `<div class="ep-item">
+      <button class="ep-btn" onclick="playEp('${m.detailPath || ""}','${m.id}','${se}','${n}',this)">EP ${n}</button>
+      <button class="ep-dl" onclick="downloadEp('${m.detailPath || ""}','${m.id}','${se}','${n}')">⬇</button>
+    </div>`;
   }).join("")}</div>`;
+}
+
+let curSe = 1;
+function switchSeason(se, btn) {
+  curSe = se;
+  document.querySelectorAll(".q-btn").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  const m = window._cur; if (!m) return;
+  m._curSe = se;
+  const picker = $("epPicker");
+  if (picker) picker.innerHTML = epPickerHtml(m).replace(/^<div class="dsec-label">Episodes<\/div>/, "");
+}
+
+async function downloadEp(detailPath, id, se, ep) {
+  toast("Fetching download link...");
+  try {
+    const d = await api(`/download?path=${encodeURIComponent(detailPath)}&id=${id}&se=${se || 1}&ep=${ep || 1}`);
+    const dl = d.downloads || [];
+    if (!dl.length) { toast("No download available."); return; }
+    const best = dl[0];
+    // Trigger direct download
+    const a = document.createElement("a");
+    a.href = best.url; a.download = ""; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+    toast("Download started");
+  } catch (e) { toast("Download failed: " + e.message); }
 }
 function toggleEpPicker() {
   const p = $("epPicker"); if (p) p.classList.toggle("open");
@@ -338,12 +433,12 @@ async function playDetail() {
   curPlaybackId = m.id;
   await startPlay(m.detailPath, m.id, window._isSeries, (m.se || 1), (m.ep || 1), m.title, m.cover, m.typeId, m.type);
 }
-async function playEp(detailPath, id, ep, btn) {
+async function playEp(detailPath, id, se, ep, btn) {
   document.querySelectorAll(".ep-btn").forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
+  if (btn) btn.classList.add("active");
   curPlaybackId = id;
   const m = window._cur;
-  await startPlay(detailPath, id, true, 1, ep, m && m.title, m && m.cover, m && m.typeId, m && m.type);
+  await startPlay(detailPath, id, true, se || 1, ep, m && m.title, m && m.cover, m && m.typeId, m && m.type);
 }
 
 async function startPlay(detailPath, id, isSeries, se, ep, title, cover, typeId, type) {
