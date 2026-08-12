@@ -386,7 +386,7 @@ function epPickerHtml(m) {
   return `<div class="dsec-label">Episodes</div>${seasonPills}<div class="ep-grid">${eps.map((n) => {
     return `<div class="ep-item">
       <button class="ep-btn" onclick="playEp('${m.detailPath || ""}','${m.id}','${se}','${n}',this)">EP ${n}</button>
-      <button class="ep-dl" onclick="downloadEp('${m.detailPath || ""}','${m.id}','${se}','${n}')">⬇</button>
+      <button class="ep-dl" onclick="downloadEp('${m.detailPath || ""}','${m.id}','${se}','${n}','${esc(m.title || "").replace(/'/g, "\\'")}')">⬇</button>
     </div>`;
   }).join("")}</div>`;
 }
@@ -402,19 +402,38 @@ function switchSeason(se, btn) {
   if (picker) picker.innerHTML = epPickerHtml(m).replace(/^<div class="dsec-label">Episodes<\/div>/, "");
 }
 
-async function downloadEp(detailPath, id, se, ep) {
-  toast("Fetching download link...");
+async function downloadEp(detailPath, id, se, ep, title) {
+  toast("Fetching download links...");
   try {
     const d = await api(`/download?path=${encodeURIComponent(detailPath)}&id=${id}&se=${se || 1}&ep=${ep || 1}`);
-    const dl = d.downloads || [];
+    const dl = (d.downloads || []).slice().sort((a, b) => (b.resolution || 0) - (a.resolution || 0));
     if (!dl.length) { toast("No download available."); return; }
-    const best = dl[0];
-    // Trigger direct download
-    const a = document.createElement("a");
-    a.href = best.url; a.download = ""; a.rel = "noopener";
-    document.body.appendChild(a); a.click(); a.remove();
-    toast("Download started");
+    openDownloadPicker(dl, d.captions || [], title || (window._cur && window._cur.title) || "", se, ep);
   } catch (e) { toast("Download failed: " + e.message); }
+}
+
+// Quality download picker modal
+function openDownloadPicker(dl, captions, title, se, ep) {
+  let html = `<div class="dl-panel glass">
+    <div class="dl-head"><div><div class="dl-title">Download${se ? " · S" + se + "E" + ep : ""}</div><div class="dl-sub">${esc(title || "")}</div></div>
+      <button class="dl-close" onclick="closeDownloadPicker()">✕</button></div>
+    <div class="dl-list">${dl.map((x, i) => `
+      <button class="dl-row" onclick="doDownload('${esc(x.url)}','${esc(title || "movie")}')">
+        <span class="dl-badge">${x.resolution ? x.resolution + "p" : (x.format || "MP4")}</span>
+        <span class="dl-size">${x.size || "direct"}</span>
+        <span class="dl-arrow">⬇</span>
+      </button>`).join("")}</div>
+    ${captions.length ? `<div class="dl-subs">${captions.length} subtitle track${captions.length > 1 ? "s" : ""} included</div>` : ""}
+  </div>`;
+  $("dlModal").innerHTML = html;
+  $("dlModal").style.display = "flex";
+}
+function closeDownloadPicker() { $("dlModal").style.display = "none"; }
+function doDownload(url, title) {
+  const a = document.createElement("a");
+  a.href = url; a.download = title.replace(/[^a-z0-9]+/gi, "_") + ".mp4"; a.rel = "noopener";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("Download started");
 }
 function toggleEpPicker() {
   const p = $("epPicker"); if (p) p.classList.toggle("open");

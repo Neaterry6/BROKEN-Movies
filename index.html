@@ -287,6 +287,21 @@
   .drawer-item svg{width:22px;height:22px;flex-shrink:0;}
   .drawer-item span{margin-top:2px;}
   #edgeHandle{position:fixed;top:0;left:0;bottom:0;width:6px;z-index:8;cursor:pointer;}
+
+  /* ===== Download picker modal ===== */
+  #dlModal{display:none;position:fixed;inset:0;z-index:40;background:rgba(0,0,0,0.7);align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+  .dl-panel{width:100%;max-width:440px;border-radius:22px 22px 0 0;padding:18px 16px 30px;margin:0 auto;}
+  .dl-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+  .dl-title{font-size:17px;font-weight:800;}
+  .dl-sub{font-size:12px;color:var(--text-dim);margin-top:3px;}
+  .dl-close{width:32px;height:32px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);color:var(--text);cursor:pointer;font-size:14px;}
+  .dl-list{display:flex;flex-direction:column;gap:8px;}
+  .dl-row{display:flex;align-items:center;justify-content:space-between;padding:14px 14px;border-radius:14px;background:var(--glass-strong);border:1px solid var(--glass-border);color:var(--text);cursor:pointer;font-size:14px;font-weight:600;}
+  .dl-row:active{transform:scale(0.98);}
+  .dl-badge{background:rgba(255,59,92,0.18);color:var(--accent);padding:4px 10px;border-radius:8px;font-weight:800;font-size:13px;}
+  .dl-size{color:var(--text-dim);font-size:12px;flex:1;margin-left:10px;}
+  .dl-arrow{font-size:16px;}
+  .dl-subs{text-align:center;color:var(--text-dim);font-size:11px;margin-top:12px;}
 </style>
 </head>
 <body>
@@ -368,6 +383,9 @@
 <div id="detail"></div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Download picker modal -->
+<div id="dlModal" onclick="if(event.target===this)closeDownloadPicker()"></div>
 
 <!-- Tab bar -->
 <div id="tabbar" class="glass">
