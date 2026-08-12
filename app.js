@@ -48,7 +48,8 @@ function card(m) {
   const fav = isFav(m.id) ? "on" : "";
   const pct = m.pct || 0;
   const prog = pct > 0 ? `<div class="progress"><div style="width:${pct}%"></div></div>` : "";
-  return `<div class="card" onclick="openDetail('${data}')">
+  const onClick = m.adult && m.adultUrl ? `playAdult('${encodeURIComponent(m.adultUrl)}','${esc((m.title || '').replace(/'/g, "\\'"))}')` : `openDetail('${data}')`;
+  return `<div class="card" onclick="${onClick}">
     <button class="fav ${fav}" onclick="event.stopPropagation();toggleFav(${data})">${fav ? "♥" : "♡"}</button>
     <div class="poster">
       <span class="badge ${isSeriesType(m) ? "" : "movie"}">${type}</span>
@@ -253,6 +254,8 @@ async function go(tab) {
       renderGrid(d.series || d.movies || d.results || [], "BL Series", "Boys Love", () => loadMoreBl());
     } else if (tab === "history") {
       showHistory();
+    } else if (tab === "adult") {
+      adultGate();
     } else if (tab === "live") {
       const d = await api('/tv-channels?limit=60');
       renderLive(d.channels || d.results || []);
@@ -280,6 +283,57 @@ async function genre(g) {
     const d = await api(`/movie/genre/${slug}?limit=80`);
     renderGrid(d.movies || d.results || [], "Genre · " + g);
   } catch (e) { $("content").innerHTML = `<div class="empty">Genre failed: ${esc(e.message)}</div>`; }
+}
+
+// ===== 18+ Adult section =====
+const ADULT_VIEWS = { porn: 1, hentai: 1, dirty: 1 };
+let adultPool = "porn";
+let adultPage = 1;
+function ageEnter() {
+  localStorage.setItem("bm_adult", "1");
+  $("ageGate").style.display = "none";
+  loadAdult("porn");
+}
+function ageLeave() {
+  $("ageGate").style.display = "none";
+  go("home");
+}
+function adultGate() {
+  if (localStorage.getItem("bm_adult") === "1") { loadAdult(adultPool); return; }
+  $("ageGate").style.display = "flex";
+}
+function adultPill(p) {
+  const key = p === "Dirty Movies" ? "dirty" : p.toLowerCase();
+  adultPool = key; adultPage = 1; loadAdult(key);
+}
+async function loadAdult(pool) {
+  adultPool = pool; adultPage = 1;
+  showLoading();
+  setCatPills(["Porn", "Hentai", "Dirty Movies"], pool === "porn" ? "Porn" : pool === "hentai" ? "Hentai" : "Dirty Movies", "adultPill");
+  try {
+    const d = await api(`/adult/search?pool=${pool}&page=1&limit=36`);
+    const items = (d.videos || []).map((v) => ({ id: "adult_" + v.url.split("/").pop(), title: v.title, cover: v.thumb, type: "adult", typeId: 1, adultUrl: v.url, adult: true }));
+    renderGrid(items, pool === "porn" ? "Porn" : pool === "hentai" ? "Hentai" : "Dirty Movies", "Explicit 18+ content", () => loadMoreAdult(pool));
+  } catch (e) { $("content").innerHTML = `<div class="empty">Adult failed: ${esc(e.message)}</div>`; }
+}
+async function loadMoreAdult(pool) {
+  try {
+    adultPage++;
+    const d = await api(`/adult/search?pool=${pool}&page=${adultPage}&limit=36`);
+    const items = (d.videos || []).map((v) => ({ id: "adult_" + v.url.split("/").pop(), title: v.title, cover: v.thumb, type: "adult", typeId: 1, adultUrl: v.url, adult: true }));
+    if (!appendGridItems(items)) { infinite = null; return; }
+  } catch { infinite = null; }
+  if (infinite) infinite.loading = false;
+}
+// Adult playback + download (direct MP4 via /adult/stream)
+async function playAdult(url, title) {
+  openPlayer(title || "Adult");
+  const vw = $("videoWrap"); vw.innerHTML = '<video id="video" controls playsinline autoplay></video>';
+  try {
+    const d = await api(`/adult/stream?url=${encodeURIComponent(url)}`);
+    if (d.stream) { const v = $("video"); v.src = d.stream; v.play().catch(() => {}); }
+    else vw.innerHTML = '<div class="empty">No stream available.</div>';
+  } catch (e) { vw.innerHTML = `<div class="empty">Stream error: ${esc(e.message)}</div>`; }
 }
 
 // ===== Infinite-scroll "load more" helpers =====

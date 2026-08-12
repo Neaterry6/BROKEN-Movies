@@ -10,6 +10,7 @@ const liveTv = require("./live-tv");
 const movies = require("./movies");
 const fzmovies = require("./fzmovies");
 const anikoto = require("./anikoto");
+const adult = require("./adult");
 
 const app = express();
 app.use(cors());
@@ -119,6 +120,19 @@ app.get("/api/tv/live/proxy", wrap(async (req, res) => {
   res.set("Content-Type", "application/vnd.apple.mpegurl");
   res.set("Cache-Control", "no-store");
   res.send(rewritten);
+}));
+
+// ---------- Adult (18+) content: porn / hentai / dirty movies via XNXX ----------
+app.get("/api/adult/search", wrap(async (req, res) => {
+  const { pool = "porn", page = 1, limit = 36 } = req.query;
+  if (!adult.POOLS[pool]) return res.status(400).json({ ok: false, error: "Unknown pool" });
+  res.json({ ok: true, ...(await adult.searchPool(pool, Number(page), Number(limit))) });
+}));
+
+app.get("/api/adult/stream", wrap(async (req, res) => {
+  const { url } = req.query;
+  if (!url || !/^https?:\/\/(www\.)?xnxx\.com\//.test(url)) return res.status(400).json({ ok: false, error: "Invalid URL" });
+  res.json({ ok: true, ...(await adult.videoStream(url)) });
 }));
 
 // ---------- Mount the full movies/anime module ----------
