@@ -98,13 +98,8 @@ function row(title, items, more) {
 }
 function renderHome(sections, heroItems) {
   clearInterval(heroTimer);
-  let html = "";
-  if (heroItems && heroItems.length) html += `<div id="featuredHost">${heroItems.slice(0, 5).map(featured).join("")}<div class="hero-dots">${heroItems.slice(0, 5).map((_, i) => `<span class="dot${i === 0 ? " active" : ""}" onclick="heroGo(${i})"></span>`).join("")}</div></div>`;
-  html += sections.map((s) => row(s.title, s.items, s.more)).join("");
-  $("content").innerHTML = html;
-  const slides = document.querySelectorAll("#featuredHost .featured");
-  slides.forEach((s, i) => (s.style.display = i === 0 ? "block" : "none"));
-  if (heroItems && heroItems.length > 1) heroTimer = setInterval(() => { const ss = document.querySelectorAll("#featuredHost .featured"); if (ss.length > 1) heroGo((heroIndex + 1) % ss.length); }, 6000);
+  // No auto-playing hero banner on top — straight to the content rows.
+  $("content").innerHTML = sections.map((s) => row(s.title, s.items, s.more)).join("");
 }
 function renderGrid(items, title, sub) {
   const c = $("content");
