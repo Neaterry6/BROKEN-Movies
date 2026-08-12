@@ -373,9 +373,26 @@ function shareDetail() {
   if (navigator.share) navigator.share(data).catch(() => {});
   else { navigator.clipboard && navigator.clipboard.writeText(data.url); toast("Link copied"); }
 }
-function downloadDetail() {
+async function downloadDetail() {
   const m = window._cur; if (!m) return;
-  playDetail(); // open stream; download links appear in quality row / player
+  // FZMovies item: resolve direct URL and download it.
+  if (m.fzmovies && m.detailPath) {
+    toast("Fetching download link...");
+    try {
+      const d = await api(`/fzmovies/download?url=${encodeURIComponent(m.detailPath)}`);
+      if (d && d.directUrl) { doDownload(d.directUrl, m.title); return; }
+      toast("No download available.");
+    } catch (e) { toast("Download failed: " + e.message); }
+    return;
+  }
+  if (!m.detailPath) { toast("No download available."); return; }
+  toast("Fetching download links...");
+  try {
+    const d = await api(`/download?path=${encodeURIComponent(m.detailPath)}&id=${m.id}${window._isSeries ? "&se=1&ep=1" : ""}`);
+    const dl = (d.downloads || []).slice().sort((a, b) => (b.resolution || 0) - (a.resolution || 0));
+    if (!dl.length) { toast("No download available."); return; }
+    openDownloadPicker(dl, d.captions || [], m.title || "", window._isSeries ? 1 : null, window._isSeries ? 1 : null);
+  } catch (e) { toast("Download failed: " + e.message); }
 }
 function playTrailerUrl(encUrl, title) {
   openPlayer(title + " — Trailer");
