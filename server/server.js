@@ -8,6 +8,8 @@ const path = require("path");
 const omni = require("./omniscrape");
 const liveTv = require("./live-tv");
 const movies = require("./movies");
+const fzmovies = require("./fzmovies");
+const anikoto = require("./anikoto");
 
 const app = express();
 app.use(cors());
@@ -25,8 +27,47 @@ const SEARCH_TYPES = { all: 0, movie: 1, tv: 2, anime: 3, short: 7 };
 app.get("/api/search", wrap(async (req, res) => {
   const { q, type = "all", page = 1 } = req.query;
   if (!q) return res.status(400).json({ ok: false, error: "Missing 'q'" });
-  const r = await omni.search({ keyword: q, page: Number(page), perPage: Number(req.query.per_page || 60), type: SEARCH_TYPES[type] ?? 0 });
-  res.json({ ok: true, ...r });
+  try {
+    const r = await omni.search({ keyword: q, page: Number(page), perPage: Number(req.query.per_page || 60), type: SEARCH_TYPES[type] ?? 0 });
+    if (r.results && r.results.length) return res.json({ ok: true, ...r });
+    throw new Error("empty");
+  } catch (e) {
+    // Fallback: FZMovies (Nigerian/foreign movies) when OmniSave fails or returns nothing.
+    const fz = await fzmovies.search(q, Number(req.query.per_page || 20));
+    return res.json({ ok: true, source: "fzmovies", query: q, results: (fz.results || []).map((m) => ({ ...m, title: m.title, detailPath: m.url })) });
+  }
+}));
+
+// FZMovies search fallback
+app.get("/api/fzmovies/search", wrap(async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.status(400).json({ ok: false, error: "Missing 'q'" });
+  res.json(await fzmovies.search(q, Number(req.query.limit || 20)));
+}));
+
+// FZMovies direct download / stream (by movie URL)
+app.get("/api/fzmovies/download", wrap(async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ ok: false, error: "Missing 'url'" });
+  res.json(await fzmovies.getDirect(url));
+}));
+
+// FZMovies details
+app.get("/api/fzmovies/detail", wrap(async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ ok: false, error: "Missing 'url'" });
+  res.json(await fzmovies.details(url));
+}));
+
+// Anime fallback source — Anikoto (recent anime + series episodes)
+app.get("/api/anime/recent", wrap(async (req, res) => {
+  res.json(await anikoto.recent(Number(req.query.page || 1), Number(req.query.per_page || 24)));
+}));
+
+app.get("/api/anime/series", wrap(async (req, res) => {
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ ok: false, error: "Missing 'id'" });
+  res.json(await anikoto.series(id));
 }));
 
 // Detail by path
