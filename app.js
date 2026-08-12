@@ -326,14 +326,26 @@ async function loadMoreAdult(pool) {
   if (infinite) infinite.loading = false;
 }
 // Adult playback + download (direct MP4 via /adult/stream)
+let adultCurrentUrl = null;
+let adultCurrentTitle = "";
 async function playAdult(url, title) {
+  adultCurrentUrl = null; adultCurrentTitle = title || "";
   openPlayer(title || "Adult");
-  const vw = $("videoWrap"); vw.innerHTML = '<video id="video" controls playsinline autoplay></video>';
+  const dl = $("playerDlBtn"); if (dl) dl.style.display = "none";
+  const vw = $("videoWrap"); vw.innerHTML = '<div class="loading"><div class="spinner"></div>Loading stream...</div>';
   try {
     const d = await api(`/adult/stream?url=${encodeURIComponent(url)}`);
-    if (d.stream) { const v = $("video"); v.src = d.stream; v.play().catch(() => {}); }
-    else vw.innerHTML = '<div class="empty">No stream available.</div>';
+    if (d.stream) {
+      adultCurrentUrl = d.stream;
+      vw.innerHTML = '<video id="video" controls playsinline autoplay></video>';
+      const v = $("video"); v.src = d.stream; v.play().catch(() => {});
+      if (dl) dl.style.display = "flex";
+    } else vw.innerHTML = '<div class="empty">No stream available.</div>';
   } catch (e) { vw.innerHTML = `<div class="empty">Stream error: ${esc(e.message)}</div>`; }
+}
+function downloadCurrent() {
+  if (adultCurrentUrl) doDownload(adultCurrentUrl, adultCurrentTitle || "adult");
+  else toast("No download source.");
 }
 
 // ===== Infinite-scroll "load more" helpers =====
