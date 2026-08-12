@@ -284,8 +284,22 @@ async function doSearch(q) {
   showLoading();
   try {
     const d = await api(`/search?q=${encodeURIComponent(q)}&limit=60`);
-    const results = d.results || d.movies || d.anime || [];
-    renderGrid(results, `Results · ${q}`);
+    let results = d.results || d.movies || d.anime || [];
+    // Fallback to FZMovies if the main source returned nothing.
+    if (!results.length) {
+      try {
+        const fz = await api(`/fzmovies/search?q=${encodeURIComponent(q)}&limit=20`);
+        results = (fz.results || []).map((m) => ({
+          id: "fz_" + (m.url || "").split("/").pop(),
+          title: m.title,
+          cover: m.poster || "",
+          detailPath: m.url,
+          type: "movie", typeId: 1, fzmovies: true,
+        }));
+        results.source = "fzmovies";
+      } catch {}
+    }
+    renderGrid(results, `Results · ${q}${results.source === "fzmovies" ? " (alt source)" : ""}`);
   } catch (e) { $("content").innerHTML = `<div class="empty">Search failed: ${esc(e.message)}</div>`; }
 }
 
@@ -464,6 +478,15 @@ async function startPlay(detailPath, id, isSeries, se, ep, title, cover, typeId,
   if (!detailPath) { toast("No stream source."); return; }
   openPlayer(title || "Now Playing");
   const vw = $("videoWrap"); vw.innerHTML = '<video id="video" controls playsinline></video>';
+  // FZMovies item: detailPath holds the movie URL -> resolve a direct stream.
+  const isFz = window._cur && window._cur.fzmovies;
+  if (isFz) {
+    try {
+      const d = await api(`/fzmovies/download?url=${encodeURIComponent(detailPath)}`);
+      if (d && d.directUrl) { attachVideo(d.directUrl, []); recordProgress(id, title, cover, 1, "movie", detailPath, 1, 1, 0); return; }
+      vw.innerHTML = '<div class="empty">No stream available.</div>'; return;
+    } catch (e) { vw.innerHTML = `<div class="empty">Stream error: ${esc(e.message)}</div>`; return; }
+  }
   try {
     const d = await api(`/download?path=${encodeURIComponent(detailPath)}&id=${id}${isSeries ? `&se=${se || 1}&ep=${ep || 1}` : ""}`);
     const dl = d.downloads || [];
