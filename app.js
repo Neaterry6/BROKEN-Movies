@@ -256,6 +256,8 @@ async function go(tab) {
       if (s.trendingNow) sections.push({ title: "Trending Now", items: s.trendingNow, more: "go('trending')" });
       if (s.nollywood) sections.push({ title: "Nollywood", items: s.nollywood, more: "go('nollywood')" });
       if (s.actionMovies) sections.push({ title: "Action", items: s.actionMovies, more: "go('action')" });
+      // Robust: if the homepage came back empty (flaky API), fall back to a movies grid.
+      if (!sections.length) { const fb = await loadFallbackMovies(); if (fb.length) { renderGrid(fb, "Movies", "Popular picks", () => loadMoreMovies()); return; } }
       renderHome(sections, all);
     } else if (tab === "movies") {
       let items = (await api('/movie/home/trending?limit=100')).movies || [];
