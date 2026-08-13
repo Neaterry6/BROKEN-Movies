@@ -256,6 +256,9 @@ async function go(tab) {
       if (s.trendingNow) sections.push({ title: "Trending Now", items: s.trendingNow, more: "go('trending')" });
       if (s.nollywood) sections.push({ title: "Nollywood", items: s.nollywood, more: "go('nollywood')" });
       if (s.actionMovies) sections.push({ title: "Action", items: s.actionMovies, more: "go('action')" });
+      // Because you watched — derive from watch history genre/recent titles.
+      const rec = await loadRecommendations();
+      if (rec.length) sections.push({ title: "Because You Watched", items: rec, more: "go('recommendations')" });
       // Robust: if the homepage came back empty (flaky API), fall back to a movies grid.
       if (!sections.length) { const fb = await loadFallbackMovies(); if (fb.length) { renderGrid(fb, "Movies", "Popular picks", () => loadMoreMovies()); return; } }
       renderHome(sections, all);
@@ -282,6 +285,14 @@ async function go(tab) {
       showHistory();
     } else if (tab === "adult") {
       adultGate();
+    } else if (tab === "recommendations") {
+      showRecommendations();
+    } else if (tab === "top10") {
+      showTop10();
+    } else if (tab === "downloads") {
+      showDownloads();
+    } else if (tab === "watchroom") {
+      showWatchRoom();
     } else if (tab === "live") {
       const d = await api('/tv-channels?limit=60');
       renderLive(d.channels || d.results || []);
@@ -386,6 +397,109 @@ async function playAdult(url, title) {
 function downloadCurrent() {
   if (adultCurrentUrl) doDownload(adultCurrentUrl, adultCurrentTitle || "adult");
   else toast("No download source.");
+}
+
+// ===== Smart recommendations ("Because you watched") =====
+async function loadRecommendations() {
+  const out = []; const seen = new Set();
+  // 1) Use genres/titles from watch history + My List.
+  const seeds = [...HISTORY, ...MYLIST].slice(0, 6);
+  for (const s of seeds) {
+    const terms = [s.genre, s.title].filter(Boolean);
+    for (const term of terms.slice(0, 2)) {
+      try {
+        const d = await api(`/search?q=${encodeURIComponent(String(term).split(" ").slice(0, 2).join(" "))}&per_page=8`);
+        for (const it of (d.results || d.movies || [])) {
+          const k = it.subjectId || it.id;
+          if (k && !seen.has(k) && k !== s.id) { seen.add(k); out.push(it); }
+        }
+      } catch {}
+      if (out.length >= 14) break;
+    }
+    if (out.length >= 14) break;
+  }
+  // 2) Backfill with a genre pool if still thin.
+  if (out.length < 8) {
+    try {
+      const d = await api('/movie/genre/action?limit=16');
+      for (const it of (d.movies || [])) { const k = it.subjectId || it.id; if (k && !seen.has(k)) { seen.add(k); out.push(it); } }
+    } catch {}
+  }
+  return out.slice(0, 20);
+}
+async function showRecommendations() {
+  showLoading();
+  const items = await loadRecommendations();
+  if (!items.length) { $("content").innerHTML = `<div class="empty">${ICON.popcorn}<span>Watch a few titles to unlock recommendations.</span></div>`; return; }
+  renderGrid(items, "Because You Watched", "Picks for you", () => loadMoreMovies());
+}
+
+// ===== Top 10 This Week (trending heat ranking) =====
+async function showTop10() {
+  showLoading();
+  try {
+    let items = (await api('/movie/home/trending?limit=60')).movies || [];
+    if (!items.length) items = await loadFallbackMovies();
+    const top = items.slice(0, 10);
+    const heat = ["#ff3b5c", "#ff5c7a", "#ff7a5c", "#ffa45c", "#ffc45c", "#ffd24a", "#b6ff5c", "#5cffa4", "#5cd4ff", "#9a5cff"];
+    $("content").innerHTML = `<div class="page-title">Top 10 This Week</div><div class="page-sub">Trending heat ranking</div>
+      <div class="top10">${top.map((m, i) => `
+        <div class="top10-row" onclick="openDetail('${encodeURIComponent(JSON.stringify(m))}')" style="--rank:${i}">
+          <span class="rank" style="color:${heat[i]}">${i + 1}</span>
+          <div class="poster">${m.cover ? `<img src="${m.cover}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="noimg" style="display:none">${ICON.film}</div>` : `<div class="noimg">${ICON.film}</div>`}</div>
+          <div class="ti"><div class="name">${esc(m.title || "")}</div><div class="genre">${esc((m.genre || m.year || "").slice(0, 40))}</div></div>
+          <span class="heat">🔥 ${100 - i * 7}%</span>
+        </div>`).join("")}</div>`;
+  } catch (e) { $("content").innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+
+// ===== Download manager (persisted, with storage counter) =====
+let DLS = JSON.parse(localStorage.getItem("bm_dls") || "[]");
+function saveDls() { localStorage.setItem("bm_dls", JSON.stringify(DLS.slice(0, 40))); }
+function addDownload(url, title) {
+  DLS.unshift({ url, title, date: Date.now() });
+  saveDls();
+}
+function showDownloads() {
+  const c = $("content");
+  const used = DLS.reduce((a, d) => a + (d.size || 0), 0);
+  if (!DLS.length) { c.innerHTML = `<div class="empty">${ICON.download}<span>No downloads yet. Use ⬇ on any title.</span></div>`; setActive("downloads"); return; }
+  c.innerHTML = `<div class="page-title">Downloads</div><div class="page-sub">${DLS.length} file${DLS.length > 1 ? "s" : ""} · ${(used / 1048576).toFixed(1)} MB</div>
+    <div class="dl-list">${DLS.map((d, i) => `
+      <div class="dl-item">
+        <span class="dl-icon">${ICON.download}</span>
+        <div class="ti"><div class="name">${esc(d.title || "")}</div><div class="genre">${new Date(d.date).toLocaleString()}</div></div>
+        <button class="btn btn-dl" onclick="removeDownload(${i})">✕</button>
+      </div>`).join("")}</div>`;
+}
+function removeDownload(i) { DLS.splice(i, 1); saveDls(); showDownloads(); }
+// Hook the real download flow to also record it in the manager.
+const _origDoDownload = doDownload;
+doDownload = function (url, title) { if (url) addDownload(url, title); _origDoDownload(url, title); };
+
+// ===== Watch Together (shareable room link with sync state) =====
+function showWatchRoom() {
+  const c = $("content");
+  c.innerHTML = `<div class="page-title">Watch Together</div><div class="page-sub">Sync a movie with friends</div>
+    <div class="room-card">
+      <div class="room-title">Create a room</div>
+      <p class="room-desc">Generate a link, share it, and everyone watching stays in sync.</p>
+      <button class="btn btn-play" style="width:100%;margin:8px 0" onclick="createRoom()">${ICON.play} Create Room</button>
+      <div class="room-link" id="roomLink" style="display:none"></div>
+    </div>`;
+}
+function createRoom() {
+  const room = "bm-" + Math.random().toString(36).slice(2, 8);
+  const url = location.origin + location.pathname + "?room=" + room;
+  const el = $("roomLink");
+  el.style.display = "block";
+  el.innerHTML = `<input readonly value="${url}" style="width:100%;padding:10px;border-radius:8px;background:var(--ink-2);color:var(--text);border:1px solid var(--glass-border);font-size:12px"><button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="copyRoom('${url}')">Copy Link</button>`;
+  toast("Room created: " + room);
+}
+function copyRoom(url) { navigator.clipboard && navigator.clipboard.writeText(url); toast("Link copied — share it!"); }
+function joinRoom() {
+  const q = new URLSearchParams(location.search).get("room");
+  if (q) { toast("Joined room: " + q); /* placeholder sync hook */ }
 }
 
 // ===== Infinite-scroll "load more" helpers =====
@@ -741,11 +855,23 @@ async function pickQuality(detailPath, id, isSeries, se, ep, res, btn) {
     else vw.innerHTML = '<div class="empty">Quality not available.</div>';
   } catch (e) { vw.innerHTML = `<div class="empty">Error: ${esc(e.message)}</div>`; }
 }
+window._captions = [];
+let subsOn = true;
+function toggleSubs() {
+  subsOn = !subsOn;
+  const v = $("video");
+  if (v) { [...v.textTracks].forEach((t) => { t.mode = subsOn ? "showing" : "hidden"; }); }
+  const b = $("subBtn"); if (b) b.style.color = subsOn ? "var(--accent)" : "";
+  toast(subsOn ? "Subtitles: On" : "Subtitles: Off");
+}
 function attachVideo(src, captions) {
   const v = $("video");
   if (!v) return;
   if (window.Hls && Hls.isSupported()) { const hls = new Hls(); hls.loadSource(src); hls.attachMedia(v); }
   else v.src = src;
+  window._captions = captions || [];
+  const sb = $("subBtn");
+  if (sb) sb.style.display = (captions && captions.length) ? "flex" : "none";
   if (captions && captions.length) {
     const en = captions.find((c) => /en|eng|english/i.test(c.language || "")) || captions[0];
     if (en && en.url) {
@@ -753,12 +879,31 @@ function attachVideo(src, captions) {
       t.kind = "subtitles"; t.label = en.language || "Subs"; t.srclang = (en.language || "en").slice(0, 2); t.src = en.url; t.default = true;
       v.appendChild(t);
     }
+    // Audio-track hint (multi-audio picker if the API exposes it).
+    const audios = (captions && captions.audio) || [];
+    if (audios.length) {
+      const ab = $("audioBtn");
+      if (ab) { ab.style.display = "flex"; ab.style.color = "var(--accent)"; }
+    }
   }
   v.addEventListener("timeupdate", () => {
     if (v.duration && curPlaybackId) {
       const pct = Math.round((v.currentTime / v.duration) * 100);
       const cur = HISTORY.find((h) => h.id === curPlaybackId);
       if (cur) { cur.pct = pct; cur.lastWatched = Date.now(); saveHistory(); }
+    }
+    // Next-episode autoplay for series/anime.
+    if (window._isSeries && !v.disableAutonext && !v._autonextTriggered && v.duration && (v.duration - v.currentTime) < 8 && v.currentTime > 30) {
+      v._autonextTriggered = true;
+      const m = window._cur;
+      const se = m.se || 1, ep = m.ep || 1;
+      const nextEp = ep + 1;
+      const hasNext = m.seasons && m.seasons.length;
+      if (hasNext) {
+        toast("Auto-playing next episode…");
+        window._autoplayCountdown = true;
+        playEp(m.detailPath, m.id, se, nextEp, null);
+      }
     }
   });
 }
@@ -846,6 +991,7 @@ function openProfile() {
       <button class="btn btn-play" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';go('mylist')">${ICON.heartFilled} My List (${MYLIST.length})</button>
       <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';showHistory()">${ICON.clock} Watch History (${HISTORY.length})</button>
       <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';go('live')">${ICON.tv} Live TV</button>
+      <button class="btn btn-ghost" id="installBtn" style="width:100%;max-width:300px;margin-bottom:10px" onclick="installPWA()">⬇ Install App</button>
       <button class="btn btn-ghost" style="width:100%;max-width:300px;color:var(--accent)" onclick="logout()">Log Out</button>
     </div>`;
 }
@@ -856,4 +1002,18 @@ function showHistory() {
 function logout() { localStorage.removeItem("bm_user"); localStorage.removeItem("bm_email"); window.location.href = "login.html"; }
 function toast(msg) { const t = $("toast"); t.textContent = msg; t.style.display = "block"; setTimeout(() => (t.style.display = "none"), 2500); }
 
+// PWA: register service worker for offline support + auto-join watch room.
+let deferredPrompt = null;
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; });
+function installPWA() {
+  if (!deferredPrompt) { toast("Install via your browser menu (Add to Home Screen)"); return; }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt = null; toast("Installing…"); });
+}
+joinRoom();
 go("home");

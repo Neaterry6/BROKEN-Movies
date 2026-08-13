@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>BROKEN Movies — Movies, Series, Anime</title>
 <meta name="description" content="BROKEN Movies · Movies · Series · Anime · Nollywood · K-Drama — stream it all in one place.">
+<meta name="theme-color" content="#ff3b5c">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <style>
   :root{
     --ink:#07070a;
@@ -195,6 +198,20 @@
   @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
   .empty{text-align:center;color:var(--text-dim);font-size:13px;padding:70px 20px;line-height:1.6;}
   .load-more{display:flex;align-items:center;justify-content:center;padding:24px 0 40px;}
+  .top10{display:flex;flex-direction:column;gap:10px;padding:6px 16px 40px;}
+  .top10-row{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);}
+  .top10-row .rank{font-size:26px;font-weight:900;width:34px;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .top10-row .poster{width:58px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0;}
+  .top10-row .poster img{width:100%;height:100%;object-fit:cover;}
+  .top10-row .ti{flex:1;min-width:0;}
+  .top10-row .heat{font-size:12px;font-weight:800;color:var(--text-dim);white-space:nowrap;}
+  .dl-list{display:flex;flex-direction:column;gap:10px;padding:6px 16px 40px;}
+  .dl-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);}
+  .dl-item .dl-icon{color:var(--accent);}
+  .dl-item .ti{flex:1;min-width:0;}
+  .room-card{padding:16px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-border);margin:6px 16px;}
+  .room-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+  .room-desc{font-size:12.5px;color:var(--text-dim);line-height:1.5;margin:0 0 12px;}
 
   /* ===== Detail ===== */
   #detail{position:fixed;inset:0;z-index:12;background:var(--ink);overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;display:none;}
@@ -402,6 +419,9 @@
   <button class="drawer-item" data-gotab="history" onclick="drawerGo('history')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span>Watch History</span></button>
   <button class="drawer-item" data-gotab="genres" onclick="drawerGo('genres')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.5 9.5l5-3M9.5 9.5l2 5 3-5"/></svg><span>Genres</span></button>
   <button class="drawer-item" data-gotab="hollywood" onclick="drawerGo('hollywood')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 2v20M2 12h20"/></svg><span>Hollywood</span></button>
+  <button class="drawer-item" data-gotab="top10" onclick="drawerGo('top10')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Top 10 This Week</span></button>
+  <button class="drawer-item" data-gotab="downloads" onclick="drawerGo('downloads')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Downloads</span></button>
+  <button class="drawer-item" data-gotab="watchroom" onclick="drawerGo('watchroom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><path d="M2 21a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15 21a6 6 0 0 1 6-5"/></svg><span>Watch Together</span></button>
   <button class="drawer-item" data-gotab="bl" onclick="drawerGo('bl')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><path d="M7 10c-2 2-2 8 0 10M17 10c2 2 2 8 0 10M7 14h10"/></svg><span>BL</span></button>
   <button class="drawer-item" data-gotab="adult" onclick="drawerGo('adult')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>18+ Adult</span></button>
   <button class="drawer-item" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Log Out</span></button>
@@ -413,6 +433,7 @@
     <button class="p-back" onclick="playerBack()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="p-title" id="playerTitle"></div>
     <button class="p-btn" id="playerDlBtn" onclick="downloadCurrent()" style="display:none" title="Download"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+    <button class="p-btn" id="subBtn" onclick="toggleSubs()" style="display:none" title="Subtitles"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="7" y1="11" x2="11" y2="11"/><line x1="13" y1="15" x2="17" y2="15"/></svg></button>
     <button class="p-btn" id="cinemaBtn" onclick="toggleCinema()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
   </div>
   <div id="videoWrap"><video id="video" controls playsinline></video></div>
