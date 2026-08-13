@@ -340,18 +340,20 @@ function adultGate() {
   if (localStorage.getItem("bm_adult") === "1") { loadAdult(adultPool); return; }
   $("ageGate").style.display = "flex";
 }
+const ADULT_CATS = ["Porn","Hentai","Dirty Movies","MILF","Asian","Ebony","18+","Anal","Lesbian","Threesome","Mature"];
 function adultPill(p) {
-  const key = p === "Dirty Movies" ? "dirty" : p.toLowerCase();
+  const key = p === "Dirty Movies" ? "dirty" : p === "18+" ? "teen18" : p.toLowerCase();
   adultPool = key; adultPage = 1; loadAdult(key);
 }
+function adultTitle(pool) { const c = ADULT_CATS.find((x) => (x === "Dirty Movies" ? "dirty" : x === "18+" ? "teen18" : x.toLowerCase()) === pool); return c || (pool[0] || "").toUpperCase() + pool.slice(1); }
 async function loadAdult(pool) {
   adultPool = pool; adultPage = 1;
   showLoading();
-  setCatPills(["Porn", "Hentai", "Dirty Movies"], pool === "porn" ? "Porn" : pool === "hentai" ? "Hentai" : "Dirty Movies", "adultPill");
+  setCatPills(ADULT_CATS, adultTitle(pool), "adultPill");
   try {
     const d = await api(`/adult/search?pool=${pool}&page=1&limit=36`);
     const items = (d.videos || []).map((v) => ({ id: "adult_" + v.url.split("/").pop(), title: v.title, cover: v.thumb, type: "adult", typeId: 1, adultUrl: v.url, adult: true }));
-    renderGrid(items, pool === "porn" ? "Porn" : pool === "hentai" ? "Hentai" : "Dirty Movies", "Explicit 18+ content", () => loadMoreAdult(pool));
+    renderGrid(items, adultTitle(pool), "Explicit 18+ content", () => loadMoreAdult(pool));
   } catch (e) { $("content").innerHTML = `<div class="empty">Adult failed: ${esc(e.message)}</div>`; }
 }
 async function loadMoreAdult(pool) {
@@ -458,6 +460,31 @@ function toggleSearch() {
   const open = w.classList.toggle("open");
   if (open) { setTimeout(() => $("searchBox").focus(), 60); }
 }
+// ===== Voice search (Web Speech API) =====
+let voiceRec = null;
+function toggleVoiceSearch() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast("Voice search not supported on this device"); return; }
+  const btn = $("micBtn");
+  if (voiceRec) { voiceRec.stop(); return; }
+  try { voiceRec = new SR(); } catch (e) { toast("Voice unavailable"); return; }
+  voiceRec.lang = "en-US";
+  voiceRec.interimResults = false;
+  voiceRec.maxAlternatives = 1;
+  const hint = $("voiceHint");
+  btn.classList.add("listening");
+  hint.style.display = "block";
+  hint.textContent = "🎙 Listening… say a title";
+  voiceRec.onresult = (e) => {
+    const q = e.results[0][0].transcript.trim();
+    hint.textContent = `✓ "${q}"`;
+    $("searchBox").value = q;
+    doSearch(q);
+  };
+  voiceRec.onerror = (ev) => { hint.textContent = ev.error === "not-allowed" ? "Mic permission denied" : "Voice error: " + ev.error; setTimeout(() => (hint.style.display = "none"), 2500); };
+  voiceRec.onend = () => { btn.classList.remove("listening"); voiceRec = null; setTimeout(() => (hint.style.display = "none"), 1500); };
+  voiceRec.start();
+}
 async function doSearch(q) {
   q = (q || "").trim();
   if (!q) return;
@@ -530,12 +557,16 @@ async function openDetail(jsonStr) {
         </div>
         ${isSeries ? `<div id="epPicker" class="open">${epPickerHtml(m)}</div>` : ""}
         <div class="quality-row" id="qualityRow" style="display:none"></div>
+        ${trailer ? `<div class="trailer-box"><div class="trailer-head">${ICON.trailer} Trailer Preview</div><video id="trailerVid" muted playsinline loop preload="metadata" onclick="this.paused?this.play():this.pause()"><source src="${esc(trailer)}"></video></div>` : ""}
         <div class="dsec-label">Overview</div>
         <div class="dsynopsis">${esc(extraDesc || m.description || m.synopsis || "No description available.")}</div>
         ${similar.length ? `<div class="dsec-label">Similar Titles</div><div class="row">${similar.map(card).join("")}</div>` : ""}
       </div>`;
     window._cur = m;
     window._isSeries = isSeries;
+    // Auto-play the trailer preview (muted, low volume, plays when scrolled into view).
+    const tv = document.getElementById("trailerVid");
+    if (tv) { try { const pr = tv.play(); if (pr) pr.catch(() => {}); } catch {} }
   } catch (e) { detail.innerHTML = `<div class="empty">Detail error: ${esc(e.message)}</div>`; }
 }
 

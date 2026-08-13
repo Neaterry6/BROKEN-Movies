@@ -8,7 +8,29 @@ const POOLS = {
   porn: ["porn", "milf", "blowjob", "amateur", "big ass", "teen", "anal", "bbc", "stepmom", "lesbian", "threesome", "creampie", "gangbang", "fetish"],
   hentai: ["hentai", "hentai 3d", "hentai uncensored", "hentai cosplay", "rule34", "hentai anime", "ahegao", "tentacle hentai", "milf hentai"],
   dirty: ["milf", "stepmom", "cheating wife", "erotic massage", "sexy secretary", "housewife", "office affair", "redhead", "latina", "ebony"],
+  milf: ["milf", "stepmom", "milf mature", "horny milf", "mature milf"],
+  asian: ["asian", "japanese", "korean", "thai", "chinese girl"],
+  ebony: ["ebony", "black girl", "black beauty", "chocolate"],
+  teen18: ["barely legal", "18 year old", "legal teen", "college girl"],
+  anal: ["anal", "anal sex", "anal creampie", "dp"],
+  lesbian: ["lesbian", "lesbian scissoring", "girl on girl", "strap on"],
+  threesome: ["threesome", "threesome mff", "threesome mfm", "gangbang"],
+  mature: ["mature", "milf mature", "granny", "cougar", "horny mom"],
 };
+// Named curated categories (shown as pills so 18+ is browsable, not one pool).
+const CATEGORIES = [
+  { key: "porn", name: "Porn" },
+  { key: "hentai", name: "Hentai" },
+  { key: "dirty", name: "Dirty Movies" },
+  { key: "milf", name: "MILF" },
+  { key: "asian", name: "Asian" },
+  { key: "ebony", name: "Ebony" },
+  { key: "teen18", name: "18+" },
+  { key: "anal", name: "Anal" },
+  { key: "lesbian", name: "Lesbian" },
+  { key: "threesome", name: "Threesome" },
+  { key: "mature", name: "Mature" },
+];
 
 async function fetchHtml(url, ref) {
   const r = await fetch(url, {
@@ -67,4 +89,4 @@ async function videoStream(url) {
   };
 }
 
-module.exports = { searchPool, videoStream, POOLS };
+module.exports = { searchPool, videoStream, POOLS, CATEGORIES };

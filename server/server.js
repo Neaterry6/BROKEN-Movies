@@ -135,6 +135,10 @@ app.get("/api/adult/stream", wrap(async (req, res) => {
   res.json({ ok: true, ...(await adult.videoStream(url)) });
 }));
 
+app.get("/api/adult/categories", wrap(async (req, res) => {
+  res.json({ ok: true, categories: adult.CATEGORIES });
+}));
+
 // ---------- Mount the full movies/anime module ----------
 movies(app, wrap);
 

@@ -83,6 +83,12 @@
     background:var(--glass-strong);border:1px solid var(--glass-border);color:var(--text);font-size:14px;
   }
   #searchBox:focus{border-color:var(--accent);}
+  .search-inner{position:relative;display:flex;align-items:center;}
+  #searchBox{padding-right:48px;}
+  .mic-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;border-radius:50%;background:var(--glass);color:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .15s;}
+  .mic-btn:active{transform:translateY(-50%) scale(0.9);}
+  .mic-btn.listening{background:var(--accent);color:#fff;box-shadow:0 0 0 4px rgba(255,59,92,.25);}
+  .voice-hint{text-align:center;font-size:12px;color:var(--text-dim);padding:6px 0 0;}
 
   /* ===== Category pills ===== */
   .cat-scroll{
@@ -212,6 +218,10 @@
   .btn.on{color:var(--accent);}
   .dsec-label{font-size:14px;font-weight:800;margin:4px 0 10px;}
   .quality-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none;}
+  .trailer-box{margin:14px 0;border-radius:14px;overflow:hidden;background:var(--ink-2);}
+  .trailer-head{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:12px;font-weight:800;color:var(--text-dim);}
+  .trailer-head svg{color:var(--accent);}
+  .trailer-box video{width:100%;aspect-ratio:16/9;object-fit:cover;background:#000;display:block;}
   .quality-row::-webkit-scrollbar{display:none;}
   .q-btn{flex:0 0 auto;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;background:var(--glass);color:var(--text-dim);border:1px solid var(--glass-border);}
   .q-btn.active{background:rgba(255,59,92,0.18);color:var(--text);border-color:rgba(255,59,92,0.4);}
@@ -348,7 +358,13 @@
   </header>
 
   <div id="searchWrap">
-    <input id="searchBox" placeholder="Search movies, series & anime..." onkeydown="if(event.key==='Enter')doSearch(this.value)">
+    <div class="search-inner">
+      <input id="searchBox" placeholder="Search movies, series & anime..." onkeydown="if(event.key==='Enter')doSearch(this.value)">
+      <button class="mic-btn" id="micBtn" onclick="toggleVoiceSearch()" aria-label="Voice search">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/></svg>
+      </button>
+    </div>
+    <div class="voice-hint" id="voiceHint" style="display:none">🎙 Listening… say a title</div>
   </div>
 
   <!-- Category pills injected per view -->
