@@ -992,6 +992,7 @@ function openProfile() {
       <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';showHistory()">${ICON.clock} Watch History (${HISTORY.length})</button>
       <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="$('detail').style.display='none';go('live')">${ICON.tv} Live TV</button>
       <button class="btn btn-ghost" id="installBtn" style="width:100%;max-width:300px;margin-bottom:10px" onclick="installPWA()">⬇ Install App</button>
+      <button class="btn btn-ghost" style="width:100%;max-width:300px;margin-bottom:10px" onclick="window.location.href='admin.html'">🛡 Admin Dashboard</button>
       <button class="btn btn-ghost" style="width:100%;max-width:300px;color:var(--accent)" onclick="logout()">Log Out</button>
     </div>`;
 }

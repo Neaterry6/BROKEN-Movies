@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Admin · BROKEN Movies</title>
+<style>
+:root{--ink:#07070a;--accent:#ff3b5c;--text:#f4f2ee;--text-dim:#f4f2eeaa;--glass:rgba(255,255,255,0.055);--glass-strong:rgba(255,255,255,0.1);--glass-border:rgba(255,255,255,0.22);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--ink);color:var(--text);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;min-height:100vh;}
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--glass-border);position:sticky;top:0;background:rgba(7,7,10,.85);backdrop-filter:blur(16px);z-index:5;}
+.top h1{font-size:18px;font-weight:800;}
+.top .row{display:flex;gap:10px;align-items:center;}
+.btn{padding:9px 14px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass);color:var(--text);font-size:13px;font-weight:700;cursor:pointer;}
+.btn.red{background:var(--accent);border:none;color:#fff;}
+.wrap{max-width:860px;margin:0 auto;padding:20px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;}
+.stat{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:18px;}
+.stat .num{font-size:30px;font-weight:900;color:var(--accent);}
+.stat .lbl{font-size:12px;color:var(--text-dim);margin-top:2px;}
+.sec{font-size:15px;font-weight:800;margin:20px 0 10px;}
+table{width:100%;border-collapse:collapse;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;overflow:hidden;}
+th,td{padding:11px 12px;text-align:left;font-size:12.5px;border-bottom:1px solid var(--glass-border);}
+th{color:var(--text-dim);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;}
+td .tag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;}
+.tag.admin{background:rgba(255,59,92,.2);color:var(--accent);}
+.tag.user{background:rgba(255,255,255,.1);color:var(--text-dim);}
+.tag-btn{border:none;background:var(--glass-strong);color:var(--text);padding:5px 9px;border-radius:8px;font-size:11px;cursor:pointer;margin-right:4px;}
+.tag-btn.del{color:var(--accent);}
+#login{margin:80px auto;max-width:380px;padding:0 20px;text-align:center;}
+#login .box{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;padding:30px;text-align:left;}
+#login h2{font-size:20px;margin-bottom:4px;}
+#login .sub{font-size:13px;color:var(--text-dim);margin-bottom:18px;}
+#login input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--glass-border);background:var(--glass-strong);color:var(--text);font-size:14px;margin-bottom:12px;outline:none;}
+#login input:focus{border-color:var(--accent);}
+.err{color:var(--accent);font-size:12px;margin-top:8px;display:none;text-align:center;}
+#dash{display:none;}
+</style>
+</head>
+<body>
+<div id="login">
+  <h1 style="font-size:22px;margin-bottom:20px;">BROKEN <span style="color:var(--accent)">Admin</span></h1>
+  <div class="box">
+    <h2>Admin login</h2>
+    <div class="sub">Sign in with an admin account</div>
+    <input id="email" type="email" placeholder="admin@broken.com">
+    <input id="pass" type="password" placeholder="Password">
+    <div class="err" id="err">Invalid admin credentials.</div>
+    <button class="btn red" style="width:100%" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<div id="dash">
+  <div class="top">
+    <h1>🛡 Admin Dashboard</h1>
+    <div class="row"><button class="btn" onclick="location.href='index.html'">Site</button><button class="btn red" onclick="doLogout()">Logout</button></div>
+  </div>
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+    <div class="sec">Registered Users</div>
+    <table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody id="users"></tbody></table>
+  </div>
+</div>
+
+<script>
+const API = "/api";
+let token = localStorage.getItem("bm_admin_token") || "";
+function setErr(m){const e=document.getElementById('err');e.style.display='block';e.textContent=m;}
+function show(el){document.getElementById(el).style.display='block';}
+function hide(el){document.getElementById(el).style.display='none';}
+async function doLogin(){
+  const em=document.getElementById('email').value.trim();const p=document.getElementById('pass').value;
+  try{
+    const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:p})});
+    const j=await r.json();
+    if(!j.ok||j.user.role!=='admin'){setErr('Not an admin account or invalid credentials.');return;}
+    token=j.token;localStorage.setItem('bm_admin_token',token);showDash();
+  }catch(e){setErr(e.message);}
+}
+async function load(){
+  try{
+    const r=await fetch('/admin/stats',{headers:{'Authorization':'Bearer '+token}});
+    if(r.status===401||r.status===403){localStorage.removeItem('bm_admin_token');token='';show('login');hide('dash');return;}
+    const j=await r.json();
+    document.getElementById('stats').innerHTML=`
+      <div class="stat"><div class="num">${j.stats.totalUsers}</div><div class="lbl">Total Users</div></div>
+      <div class="stat"><div class="num">${j.stats.admins}</div><div class="lbl">Admins</div></div>
+      <div class="stat"><div class="num">${j.users.length}</div><div class="lbl">Accounts</div></div>`;
+    document.getElementById('users').innerHTML=j.users.map(u=>`
+      <tr>
+        <td>${u.name||''}</td><td>${u.email}</td>
+        <td><span class="tag ${u.role}">${u.role}</span></td>
+        <td>
+          <button class="tag-btn" onclick="setRole('${u.id}','${u.role==='admin'?'user':'admin'}')">${u.role==='admin'?'Demote':'Make Admin'}</button>
+          <button class="tag-btn del" onclick="delUser('${u.id}')">Delete</button>
+        </td>
+      </tr>`).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--text-dim)">No users yet.</td></tr>';
+  }catch(e){console.error(e);}
+}
+async function setRole(id,role){await fetch('/admin/users/'+id+'/role',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({role})});load();}
+async function delUser(id){if(!confirm('Delete this user?'))return;await fetch('/admin/users/'+id+'/delete',{method:'POST',headers:{'Authorization':'Bearer '+token}});load();}
+function showDash(){hide('login');show('dash');load();}
+function doLogout(){localStorage.removeItem('bm_admin_token');location.reload();}
+// auto-login if token exists
+if(token){showDash();}
+</script>
+</body>
+</html>

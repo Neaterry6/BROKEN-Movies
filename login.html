@@ -57,19 +57,32 @@ body{background:var(--ink);color:var(--text);font-family:'Helvetica Neue',Helvet
   <div class="demo">Demo login: <b>demo@broken.com</b> / <b>broken123</b></div>
 </div>
 <script>
+const API='/api';
 function setErr(m){const e=document.getElementById('err');e.style.display='block';e.textContent=m;}
-function login(){
+async function login(){
   const em=document.getElementById('email').value.trim().toLowerCase();
   const p=document.getElementById('pass').value;
-  if(em==='demo@broken.com'&&p==='broken123'){localStorage.setItem('bm_user','demo');window.location.href='index.html';}
-  else setErr('Invalid email or password.');
+  setErr('');e.style.display='none';
+  try{
+    const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:p})});
+    const j=await r.json();
+    if(!j.ok)return setErr(j.error||'Invalid email or password.');
+    localStorage.setItem('bm_user',j.user.name);localStorage.setItem('bm_email',j.user.email);localStorage.setItem('bm_token',j.token);
+    window.location.href = j.user.role==='admin' ? 'admin.html' : 'index.html';
+  }catch(e){setErr(e.message);}
 }
-function signup(){
+async function signup(){
   const n=document.getElementById('sname').value.trim();
   const em=document.getElementById('semail').value.trim();
   const p=document.getElementById('spass').value;
   if(!n||!em||p.length<6)return setErr('Fill all fields (password 6+ chars).');
-  localStorage.setItem('bm_user',n);localStorage.setItem('bm_email',em);window.location.href='index.html';
+  try{
+    const r=await fetch(API+'/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:em,password:p})});
+    const j=await r.json();
+    if(!j.ok)return setErr(j.error||'Signup failed.');
+    localStorage.setItem('bm_user',j.user.name);localStorage.setItem('bm_email',j.user.email);localStorage.setItem('bm_token',j.token);
+    window.location.href='index.html';
+  }catch(e){setErr(e.message);}
 }
 function showSignup(){document.getElementById('loginBox').style.display='none';document.getElementById('signupBox').style.display='block';document.getElementById('err').style.display='none';}
 function showLogin(){document.getElementById('signupBox').style.display='none';document.getElementById('loginBox').style.display='block';document.getElementById('err').style.display='none';}

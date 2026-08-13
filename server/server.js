@@ -11,15 +11,83 @@ const movies = require("./movies");
 const fzmovies = require("./fzmovies");
 const anikoto = require("./anikoto");
 const adult = require("./adult");
+const auth = require("./auth");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+// Security: rate-limit + block bots/scrapers on API & admin routes.
+app.use(auth.securityMw);
+
+// Seed a default admin if none exists (admin@broken.com / admin123).
+(function seedAdmin() {
+  try {
+    const users = auth.loadUsers();
+    if (!users.some((u) => u.role === "admin")) {
+      const salt = require("crypto").randomBytes(8).toString("hex");
+      users.push({ id: require("crypto").randomUUID(), name: "Admin", email: "admin@broken.com", password: require("crypto").createHmac("sha256", salt).update("admin123").digest("hex"), salt, role: "admin", created: Date.now() });
+      auth.saveUsers(users);
+    }
+  } catch (e) { console.error("seedAdmin", e.message); }
+})();
 
 const wrap = (fn) => (req, res) => fn(req, res).catch((err) => {
   console.error("ERR", err.message);
   res.status(500).json({ ok: false, error: err.message || "Internal error" });
 });
+
+// ---------- Auth ----------
+app.post("/api/auth/signup", wrap(async (req, res) => {
+  const r = auth.signup(req.body || {});
+  if (r.error) return res.status(400).json({ ok: false, error: r.error });
+  res.json({ ok: true, token: r.token, user: r.user });
+}));
+
+app.post("/api/auth/login", wrap(async (req, res) => {
+  const r = auth.login(req.body || {});
+  if (r.error) return res.status(401).json({ ok: false, error: r.error });
+  res.json({ ok: true, token: r.token, user: r.user });
+}));
+
+app.get("/api/auth/me", wrap(async (req, res) => {
+  const token = (req.headers.authorization || "").replace(/^Bearer /i, "");
+  const u = auth.authUser(token);
+  if (!u) return res.status(401).json({ ok: false, error: "Unauthorized" });
+  res.json({ ok: true, user: { id: u.id, name: u.name, email: u.email, role: u.role } });
+}));
+
+// ---------- Admin ----------
+function requireAdmin(req, res) {
+  const token = (req.headers.authorization || "").replace(/^Bearer /i, "");
+  const u = auth.authUser(token);
+  if (!u) return res.status(401).json({ ok: false, error: "Unauthorized" });
+  if (u.role !== "admin") return res.status(403).json({ ok: false, error: "Forbidden" });
+  return u;
+}
+
+app.get("/admin/stats", wrap(async (req, res) => {
+  const u = requireAdmin(req, res); if (!u) return;
+  const s = auth.adminStats();
+  res.json({ ok: true, stats: { totalUsers: s.users, admins: s.admins }, users: s.registered.map((x) => ({ id: x.id, name: x.name, email: x.email, role: x.role, created: x.created })) });
+}));
+
+app.post("/admin/users/:id/role", wrap(async (req, res) => {
+  const admin = requireAdmin(req, res); if (!admin) return;
+  const users = auth.loadUsers();
+  const target = users.find((u) => u.id === req.params.id);
+  if (!target) return res.status(404).json({ ok: false, error: "User not found" });
+  target.role = req.body && req.body.role === "admin" ? "admin" : "user";
+  auth.saveUsers(users);
+  res.json({ ok: true });
+}));
+
+app.post("/admin/users/:id/delete", wrap(async (req, res) => {
+  const admin = requireAdmin(req, res); if (!admin) return;
+  let users = auth.loadUsers();
+  users = users.filter((u) => u.id !== req.params.id);
+  auth.saveUsers(users);
+  res.json({ ok: true });
+}));
 
 // ---------- Core handlers the site uses ----------
 const SEARCH_TYPES = { all: 0, movie: 1, tv: 2, anime: 3, short: 7 };
